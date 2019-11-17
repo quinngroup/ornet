@@ -10,7 +10,7 @@ import unittest
 import ornet.Pipeline as pipeline
 
 input_path = './data/test_vid.avi'
-out_path = os.path.join('.', 'outputs')
+out_path = os.path.join('./data', 'outputs')
 vid_name = 'test_vid'
 full_video = os.path.join(out_path, vid_name + '.avi')
 masks_path = os.path.join(out_path, vid_name + 'MASKS.npy')
@@ -64,6 +64,19 @@ class OrnetTests(unittest.TestCase):
 
 		self.assertTrue(True)
 
+	def test_convert_to_grayscale(self):
+		'''
+		Tests the grayscale conversion function defined in cells_to_gray.py.
+		'''
+
+		try:
+			pipeline.convert_to_grayscale(os.path.join(tmp_path, 
+							'test_vid_1.avi'), tmp_path)
+		except:
+			self.assertTrue(False)
+
+		self.assertTrue(True)
+
 	def test_compute_gmm_intermediates(self):
 		'''
 		Tests the GMM process defined in the gmm subpackage.
@@ -98,4 +111,3 @@ if __name__ == '__main__':
 	os.makedirs(tmp_path, exist_ok=True)
 	
 	unittest.main(exit=False)
-	shutil.rmtree('./outputs')
