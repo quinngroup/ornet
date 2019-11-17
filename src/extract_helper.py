@@ -12,7 +12,7 @@ import cv2
 import imageio
 import numpy as np
 
-def generate_singles(vid_path, masks_path, output_path):
+def generate_singles(vid_path, masks_path, output_path, show_vid=False):
 	'''
 	Each indivial cell in a video is extracted into it's own video.
 
@@ -24,6 +24,8 @@ def generate_singles(vid_path, masks_path, output_path):
 		Path to the segmentation masks for the input video.
 	output_path: String
 		Path to the directory to save the individual videos.
+	show_vid: boolean
+		Flag to show video while extracting cells.
 
 	Returns
 	----------
@@ -51,14 +53,17 @@ def generate_singles(vid_path, masks_path, output_path):
 			output = np.ma.filled(output, 0)
 			writers[j].write(output)
 
-		cv2.putText(frame, 'Frame number: ' + str(i), (100, 100),
-				cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
-		cv2.imshow("Original Video", frame)
-		if cv2.waitKey(1) == 27:
-			cv2.destroyAllWindows()
-			exit(0)
+		if show_vid:
+			cv2.putText(frame, 'Frame number: ' + str(i), (100, 100),
+					cv2.FONT_HERSHEY_SIMPLEX, 1.0, (255, 255, 255))
+			cv2.imshow("Original Video", frame)
+			if cv2.waitKey(1) == 27:
+				cv2.destroyAllWindows()
+				exit(0)
 
-	cv2.destroyAllWindows()	
+	if show_vid:
+		cv2.destroyAllWindows()	
+	
 	reader.close()
 	for writer in writers:
 		writer.release()
