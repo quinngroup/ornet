@@ -18,7 +18,7 @@ The installation process should install all required dependencies.
 However, in the event that not all packages are not installed properly
 please refer to the dependicies section and manually instal everything.
 
-#Testing
+# Testing
 Inside of the tests subdirectory, run the following command:
 `python ornet_tests.py`
 
