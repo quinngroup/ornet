@@ -4,7 +4,6 @@ A test suite for the ornet package.
 #Author: Marcus Hill
 
 import os
-import shutil
 import unittest
 
 import ornet.Pipeline as pipeline
