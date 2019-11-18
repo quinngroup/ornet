@@ -11,6 +11,7 @@ Python >= 3.7
 
 # Installation
 Inside of the root directory of this project run either
+
 `pip install .` or `python setup.py install`
 
 The installation process should install all required dependencies.
@@ -19,9 +20,12 @@ please refer to the dependicies section and manually instal everything.
 
 # Testing
 Inside of the tests subdirectory, run the following command:
-`python ornet_tests.py`
 
-All 5 tests should be run without any failures.
+```
+python ornet_tests.py
+```
+
+All 6 tests should be run without any failures.
 
 # Usage
 Ornet can be utilized by calling the Pipeline module from either the command line interface or in a script.
