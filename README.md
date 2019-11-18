@@ -25,7 +25,7 @@ All 5 tests should be run without any failures.
 
 # Usage
 Ornet can be utilized by calling the Pipeline module from either the command line interface or in a script.
-Pipeline will create a directory of the following structure:
+Pipeline will output a directory of the following structure:
 
 ```
 ├── outputs/
