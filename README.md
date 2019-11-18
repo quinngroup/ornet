@@ -28,8 +28,11 @@ Ornet can be utilized by calling the Pipeline module from either the command lin
 Pipeline will create a directory of the following structure:
 
 outputs/
+
 	singles/
+
 	intermediates/
+
 	distances/
 
 The singles sub-directory will contain the individual videos (.avi) of each extracted cell from the original video, 
