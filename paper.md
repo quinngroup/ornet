@@ -7,7 +7,6 @@ tags:
   - computer vision
 authors:
     - name: Mojtaba Fazli
-        affiliation: "1, 2"
     - name: Andrew Durden
         affilitation: 2
     - name: Marcus Hill
