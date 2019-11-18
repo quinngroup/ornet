@@ -27,12 +27,11 @@ All 5 tests should be run without any failures.
 Ornet can be utilized by calling the Pipeline module from either the command line interface or in a script.
 Pipeline will create a directory of the following structure:
 
-```bash
-|
-|outputs/
-|	singles/
-|	intermediates/
-|	distances/
+```
+├── outputs/
+│   ├── singles/
+│   ├── intermediates/
+│   ├── distances/
 ```
 
 The singles sub-directory will contain the individual videos (.avi) of each extracted cell from the original video, 
@@ -50,6 +49,7 @@ For more detailed information regarding command line options the "-h" flag can b
 ## Python script:
 ```
 from ornet import Pipeline as pipeline
+
 pipeline.run(input_path, mask_path, output_path)
 ```
 
