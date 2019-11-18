@@ -7,7 +7,6 @@ tags:
   - computer vision
 authors:
     - name: Mojtaba Fazli
-        orcid: 0000-0002-6082-2538
         affiliation: "1, 2"
     - name: Andrew Durden
         affilitation: 2
