@@ -26,15 +26,9 @@ authors:
   - name: Shannon Quinn
     index: 2, 3
 affiliations:
-<<<<<<< HEAD
-  - Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
+  - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
     index: 1
-  - Department of Computer Science, University of Georgia, Athens, GA 30602 USA
-=======
-  - name: Department of Computer Science, University of Georgia
-    index: 1
-  - name: Department of Computer Science, University of Pittsburgh
->>>>>>> bb415270c57c315af8f5b6ebc217768764902c4c
+  - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 2
   - Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
