@@ -36,9 +36,11 @@ Our project builds on this idea (see Durden, 2019), as we seek to convert physic
 
 OrNet, a python package, relies heavily on algorithms from the Scikit-Learn tool kit. This in turn is built on NumPy, SciPy, and Matplotlib. Our program takes videos of human cells with fluorescently tagged mitochondria and first extracts individual cells. With that base to work from, a model is fitted to video frames by calculating a mixture of probability masses (Gaussian Mixture Model). Essentially, this model identifies the center of the densest regions of mitochondrial protein, or peaks, and finds the probability that the surrounding protein belongs to a specific local distribution. The ultimate goal is to analyze the data as a graph, where the peaks in density are used as nodes, and probability metrics form weights and edges between nodes. 
 
-The current version requires segmentation masks for each cell in a video, taken from the initial frame of each video, to seed the complete segmentation algorithm. Past masks were generated using the C based ITK-SNAP medical imaging tool. Running the current code requires executing the Pipeline.py script with arguments denoting the location of raw videos, masks, and desired path for output. Output takes the form of learned components from the mixture model and the calculated weights between nodes.
+The current version requires segmentation masks for each cell in a video, taken from the initial frame of each video, to seed the complete segmentation algorithm. Past masks were generated using the C based ITK-SNAP medical imaging tool. Running the current code requires executing the Pipeline.py script with arguments denoting the location of raw videos, masks, and desired path for output. Output takes the form of learned components from the mixture model and the calculated weights between nodes. These outputs are ripe for analysis at the researcher's discretion.
 
 # Acknowledgements
+
+Thanks to Allyson T. Loy, Barbara Reaves, Abigail Courtney, and Frederick D. Quinn for contributions to the associated project.
 
 The project that yielded this software was supported in part by a grant from the National Science Foundation (#1458766).
 
