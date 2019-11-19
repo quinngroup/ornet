@@ -11,7 +11,7 @@ authors:
   - name: Andrew Durden
     affiliation: 2
   - name: Marcus Hill
-    affilitation: 2
+    affiliation: 2
 affiliations:
   - name: Chakra Chennubhotla, Associate Professor, University of Pittsburgh
     index: 1
