@@ -30,7 +30,7 @@ affiliations:
     index: 1
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 2
-  - Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
+  - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
 date: 19 November 2019
 bibliography: paper.bib
