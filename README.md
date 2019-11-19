@@ -1,5 +1,10 @@
 # OrNet
-**OrNet** is a Python pipeline for analyzing fluorescence microscopy imagry of mitochondrial protein patterns.
+Tracking *diffuse* organelles presents more challenges than just characterizing movement– their structures morph into/out of each other much more fluidly than discrete cells. Structural changes in organelles can offer key insight into cellular proccesses. **OrNet** is a Python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
+
+
+
+![LLO](/img/MitoEx.png  "Cervical Epithelial Cell")
+*Mitochondria in a single cell, with red flourescent tagging* 
 
 # Dependencies
 **Required packages:** scipy, numpy, matplotlib, opencv, itk, cython,
@@ -64,15 +69,10 @@ pipeline.run(input_path, mask_path, output_path)
 # Requests, Queries, or Issues
 In case of any requested changes, questions, or issues related to this source code please create an issue here.
 
-# Project Status
-There is currently no continuous integration set up.
-
 # Publications
-If you are using OrNet in a scientific paper, please cite the following:
+If you are using OrNet in a scientific paper, please see the following publications:
 
-Bibtex here for scipy paper
-Bibtex here for Arxiv entry of thesis
+[Dynamic Social Network Modeling of Diffuse Subcellular Morphologies](https://conference.scipy.org/proceedings/scipy2018/Andrew_Durden.html)
 
-# Overview of Content
+[Modelling Diffuse Subcellular Protein Structures as Dynamic Social Networks](https://arxiv.org/abs/1904.12960)
 
-# Images
