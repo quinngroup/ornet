@@ -2,8 +2,8 @@
 Tracking *diffuse* organelles presents more challenges than just characterizing movement– their structures morph into/out of each other much more fluidly than discrete cells. Structural changes in organelles can offer key insight into cellular proccesses. **OrNet** is a Python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
 
 
+<img src="img/MitoEx.png" width="400">
 
-![LLO](/img/MitoEx.png  "Cervical Epithelial Cell")
 *Mitochondria in a single cell, with red flourescent tagging* 
 
 # Dependencies
