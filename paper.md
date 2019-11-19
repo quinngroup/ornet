@@ -1,21 +1,21 @@
 ---
 title: 'OrNet-  a python pipeline to model organelles as social networks'
 tags:
-  - Python
-  - cellular biology
-  - mitochondria
-  - computer vision
+	- Python
+	- cellular biology
+	- mitochondria
+	- computer vision
 authors:
-    - name: Mojtaba Fazli
-    - name: Andrew Durden
-        affilitation: 2
-    - name: Marcus Hill
-        affilitation: 2
+	- name: Mojtaba Fazli
+	- name: Andrew Durden
+		affilitation: 2
+	- name: Marcus Hill
+		affilitation: 2
 affiliations:
- - name: Chakra Chennubhotla, Associate Professor, University of Pittsburgh
-   index: 1
- - name: Shannon Quinn, Assistant Professor, University of Georgia
-   index: 2
+	- name: Chakra Chennubhotla, Associate Professor, University of Pittsburgh
+	index: 1
+	- name: Shannon Quinn, Assistant Professor, University of Georgia
+	index: 2
 date: 19 November 2019
 bibliography: paper.bib
 ---
