@@ -14,16 +14,12 @@ authors:
   - name: Marcus Hill
     orcid: 0000-0002-9380-3181
     affiliation: 1
-  - name: Shannon P. Quinn
-    orcid: 0000-0002-8916-6335
-    affiliation: 1
-  - name: Chakra Chennubhotla
-    affiliation: 2
   - name: Rachel Mattson
     affiliation: 2
   - name: Chakra Chennubhotla
     affiliation: 1
   - name: Shannon Quinn
+    orcid: 0000-0002-8916-6335
     affiliation: 2, 3
 affiliations:
   - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
