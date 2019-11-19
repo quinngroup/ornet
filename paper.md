@@ -15,17 +15,17 @@ authors:
     orcid: 0000-0002-9380-3181
     affiliation: 1
   - name: Rachel Mattson
-    affiliation: 2
+    affiliation: 1 
   - name: Chakra Chennubhotla
-    affiliation: 1
+    affiliation: 2
   - name: Shannon Quinn
     orcid: 0000-0002-8916-6335
-    affiliation: 2, 3
+    affiliation: 1, 3
 affiliations:
-  - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
-    index: 1
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
-    index: 2
+    index: 1
+  - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
+    index: 2 
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
 date: 19 November 2019
