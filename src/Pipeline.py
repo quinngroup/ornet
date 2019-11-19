@@ -27,7 +27,7 @@ def constrain_vid(vid_path, full_path, frame_num):
 	result to an output video. If the video contains less frames than 
 	frame_num, then then all frames of the video are returned.
 
-	Paramaters
+	Parameters
 	----------
 	vid_path: String
 		Path to the input video.
@@ -164,7 +164,7 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
 	----------
 	vid_dir: String
 		Path to the directory that contains the single videos.
-	itermediates_path:
+	intermediates_path:
 		Path to save the intermediate files.
 
 	Returns
@@ -187,7 +187,7 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
 
 def compute_distances(intermediates_path, output_path):
 	'''
-	Generate distnaces between means using Jensen-Shannon Divergence.
+	Generate distances between means using Jensen-Shannon Divergence.
 
 	Parameters
 	----------
