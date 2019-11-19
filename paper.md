@@ -12,11 +12,19 @@ authors:
     affiliation: 2
   - name: Marcus Hill
     affiliation: 2
-affiliations:
-  - name: Chakra Chennubhotla, Associate Professor, University of Pittsburgh
+  - name: Rachel Mattson
+    affiliation: 2
+  - name: Chakra Chennubhotla
     index: 1
-  - name: Shannon Quinn, Assistant Professor, University of Georgia
+  - name: Shannon Quinn
+    index: 2, 3
+affiliations:
+  - Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
+    index: 1
+  - Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 2
+  - Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
+    index: 3
 date: 19 November 2019
 bibliography: paper.bib
 ---
