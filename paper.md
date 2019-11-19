@@ -22,9 +22,9 @@ authors:
   - name: Rachel Mattson
     affiliation: 2
   - name: Chakra Chennubhotla
-    index: 1
+    affiliation: 1
   - name: Shannon Quinn
-    index: 2, 3
+    affiliation: 2, 3
 affiliations:
   - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
     index: 1
