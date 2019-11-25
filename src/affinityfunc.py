@@ -7,7 +7,7 @@ import joblib
 import numpy as np
 
 from ornet.gmm.loss import normpdf
-from ornet.measure import multivariate_js, multivariate_kl
+from ornet.measure import multivariate_js, multivariate_kl, multivariate_hellinger
 
 
 def aff_by_eval(means, covars):
@@ -55,7 +55,7 @@ def aff_KL_div(means, covars):
 
 def aff_JS_div(means, covars):
     """
-    Applies KL divergence to each pair of intermediates to create an affinity
+    Applies Jensen-Shannon divergence to each pair of intermediates to create an affinity
     table for a frame
     """
 
@@ -65,6 +65,23 @@ def aff_JS_div(means, covars):
         # find the probability for every mean point in the current component
         for j, (mean_2, covar_2) in enumerate(zip(means, covars)):
             aff_Table[i, j] = multivariate_js(mean_1, covar_1, mean_2, covar_2)
+        # transpose the probabilities and append them as a column
+    return aff_Table
+
+
+
+def aff_hellinger(means, covars):
+    """
+    Applies Jensen-Shannon divergence to each pair of intermediates to create an affinity
+    table for a frame
+    """
+
+    aff_Table = np.empty([means.shape[0], means.shape[0]])
+    # iterate through the components
+    for i, (mean_1, covar_1) in enumerate(zip(means, covars)):
+        # find the probability for every mean point in the current component
+        for j, (mean_2, covar_2) in enumerate(zip(means, covars)):
+            aff_Table[i, j] = multivariate_hellinger(mean_1, covar_1, mean_2, covar_2)
         # transpose the probabilities and append them as a column
     return aff_Table
 
@@ -90,7 +107,8 @@ def get_all_aff_tables(means, covars, aff_funct):
     aff_dispatch = {
         'probability': aff_by_eval,
         'KL div': aff_KL_div,
-        'JS div': aff_JS_div
+        'JS div': aff_JS_div,
+	'Hellinger': aff_hellinger
     }
     aff_Tables = [aff_dispatch[aff_funct](means[0], covars[0])]
     for i in range(1, means.shape[0]):
@@ -120,6 +138,7 @@ if __name__ == "__main__":
                               " 'probability' is A -> B = A(B).",
                               " 'KL div' is Kullback Leibler divergence",
                               " 'JS div' is Jenson Shannon divergence",
+                              " 'Hellinger' is Hellinger distance"
                               "[DEFAULT probability]"))
     parser.add_argument("--n_jobs", type=int, default=-1,
                         help=("Degree of parallelism for reading in videos."

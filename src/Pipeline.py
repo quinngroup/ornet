@@ -187,7 +187,7 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
 
 def compute_distances(intermediates_path, output_path):
 	'''
-	Generate distances between means using Jensen-Shannon Divergence.
+	Generate distances between means using Hellinger Distance.
 
 	Parameters
 	----------
@@ -204,7 +204,7 @@ def compute_distances(intermediates_path, output_path):
 	intermediates = os.listdir(intermediates_path)
 	for intermediate in intermediates:
 		vid_inter = np.load(os.path.join(intermediates_path, intermediate))
-		table = get_all_aff_tables(vid_inter['means'], vid_inter['covars'], 'JS div')
+		table = get_all_aff_tables(vid_inter['means'], vid_inter['covars'], 'Hellinger')
 		np.save(os.path.join(output_path, intermediate.split('.')[0] + '.npy'), 
 				table)
 
