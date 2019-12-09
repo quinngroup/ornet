@@ -13,6 +13,7 @@ out_path = os.path.join('./data', 'outputs')
 vid_name = 'test_vid'
 full_video = os.path.join(out_path, vid_name + '.avi')
 masks_path = os.path.join(out_path, vid_name + 'MASKS.npy')
+normalized_path = os.path.join(out_path, 'normalized')
 downsampled_path = os.path.join(out_path, 'downsampled')
 singles_path = os.path.join(out_path, 'singles')
 intermediates_path = os.path.join(out_path, 'intermediates')
@@ -33,14 +34,26 @@ class OrnetTests(unittest.TestCase):
 
 		self.assertTrue(True)
 
+	def test_normalize(self):
+		'''
+		Tests the median normalization function defined in median_normalization.py.
+		'''
+		try:
+			pipeline.median_normalize(vid_name, full_video, normalized_path)
+		except:
+			self.assertTrue(False)
+
+		self.assertTrue(True)
+
 	def test_downsample_vid(self):
 		'''
 		Tests the downsampling function defined in Pipeline.py
 		'''
 
 		try:
-			pipeline.downsample_vid(vid_name, input_path, masks_path, 
-						downsampled_path, 100)
+			pipeline.downsample_vid(vid_name, 
+				os.path.join(normalized_path, vid_name + '.avi'), 
+				masks_path, downsampled_path, 100)
 		except:
 			self.assertTrue(False)
 

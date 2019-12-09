@@ -8,6 +8,7 @@ functions, and eigen-decomposition of the matrix representation.
 
 import os
 import re
+import shutil
 import argparse
 
 import cv2
@@ -15,11 +16,12 @@ import joblib
 import imageio
 import numpy as np
 
-from ornet.extract_cells import extract_cells
-from ornet.extract_helper import generate_singles
-from ornet.cells_to_gray import vid_to_gray
-from ornet.affinityfunc import get_all_aff_tables
 from ornet.gmm.run_gmm import skl_gmm
+from ornet.cells_to_gray import vid_to_gray
+from ornet.extract_cells import extract_cells
+from ornet.affinityfunc import get_all_aff_tables
+from ornet.extract_helper import generate_singles
+from ornet.median_normalization import median_normalize as normalize
 
 def constrain_vid(vid_path, full_path, frame_num):
 	'''
@@ -78,6 +80,59 @@ def cell_segmentation(vid_name, vid_path, masks_path, out_path):
 	'''
 	masks = extract_cells(vid_path, masks_path, show_video=False)
 	np.save(os.path.join(out_path, vid_name + 'MASKS.npy'), masks)
+
+def median_normalize(vid_name, gray_path, out_path):
+	'''
+	Applies median normalization to a grayscale input video (.npy)
+
+	Parameters
+	----------
+	vid_name: String
+		Name of the input video.
+	gray_path: String	
+		Path to the grayscale video (.npy file).
+	out_path: String	
+		Directory to save the normalized video.
+
+	Returns
+	----------
+	NoneType object
+	'''
+	normalize(vid_name, gray_path, out_path)
+
+def gray_to_avi(vid_name, gray_path, original_path, out_path):
+	'''
+	Converts a grayscale representation of a video (numpy file) into an 
+	.avi video.
+
+	Parameters
+	----------
+	vid_name: String
+		Name of the input video
+	gray_path: String
+		Path to the numpy file (.npy)
+	original_path: String
+		Path to the original video
+	out_path: String	
+		Path to save the output video
+
+	Returns
+	----------
+	NoneType object
+	'''
+
+	reader = imageio.get_reader(original_path)
+	fps = reader.get_meta_data()['fps']
+	size = reader.get_meta_data()['size']
+	reader.close()
+
+	gray_vid = np.load(gray_path)
+	writer = cv2.VideoWriter(os.path.join(out_path, vid_name + '.avi'),
+		cv2.VideoWriter_fourcc('m', 'j', 'p', 'g'), fps, size)
+	for frame in gray_vid:
+		writer.write(cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR))
+
+	writer.release()
 
 def downsample_vid(vid_name, vid_path, masks_path, downsampled_path, frame_skip):
 	'''
@@ -248,6 +303,7 @@ def run(input_path, initial_masks_dir, output_path):
 		vid_name = re.sub(' \(2\)| \(Converted\)', '', vid_name)
 		full_video = os.path.join(out_path, vid_name + '.avi')
 		masks_path = os.path.join(out_path, vid_name + 'MASKS.npy')
+		normalized_path = os.path.join(out_path, 'normalized')
 		downsampled_path = os.path.join(out_path, 'downsampled')
 		singles_path = os.path.join(out_path, 'singles')
 		intermediates_path = os.path.join(out_path, 'intermediates')
@@ -255,25 +311,35 @@ def run(input_path, initial_masks_dir, output_path):
 		tmp_path = os.path.join(out_path, 'tmp')
 
 		os.makedirs(out_path, exist_ok=True)
+		os.makedirs(normalized_path, exist_ok=True)
 		os.makedirs(downsampled_path, exist_ok=True)
 		os.makedirs(singles_path, exist_ok =True)
 		os.makedirs(intermediates_path, exist_ok =True)
 		os.makedirs(distances_path, exist_ok=True)
 		os.makedirs(tmp_path, exist_ok=True)
 
-		
 		constrain_vid(os.path.join(input_dir, vid), full_video, 20000)
 		cell_segmentation(vid_name, full_video, 
-					os.path.join(initial_masks_dir, vid_name + '.vtk'), out_path)
-		downsample_vid(vid_name, full_video, masks_path, downsampled_path, 100)
+			os.path.join(initial_masks_dir, vid_name + '.vtk'), out_path)
+		median_normalize(vid_name, full_video, normalized_path)
+		downsample_vid(vid_name, os.path.join(normalized_path, vid_name + '.avi'), 
+			masks_path, downsampled_path, 100)
 		generate_single_vids(os.path.join(downsampled_path, vid_name + '.avi'),
-					masks_path, tmp_path)
+			masks_path, tmp_path)
 		single_vids = os.listdir(tmp_path)
 		for single in single_vids:
 			convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
+			shutil.move(os.path.join(tmp_path, single),
+				os.path.join(singles_path, single))
 
 		compute_gmm_intermediates(tmp_path, intermediates_path)
 		compute_distances(intermediates_path, distances_path)
+
+		os.remove(full_video)
+		os.remove(masks_path)
+		shutil.rmtree(normalized_path)
+		shutil.rmtree(downsampled_path)
+		shutil.rmtree(tmp_path)
 
 if __name__ == '__main__':
 
