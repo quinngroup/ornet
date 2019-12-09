@@ -1,7 +1,6 @@
 '''
-This script converts the single cell videos created by
-extract_helper into grayscale frames saved in a .npy
-file.
+This script converts the cell videos into grayscale frames saved in
+".npy" files.
 '''
 #Author: Marcus Hill
 
@@ -41,7 +40,7 @@ def vid_to_gray(vid_path, out_path):
 if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(
-		description="Reads in single cell video(s) and convert them into grayscale numpy arrays.")
+		description="Reads in cell video(s) and convert them into grayscale numpy arrays.")
 
 	#Required args
 	parser.add_argument('-i', '--input', required=True, help="Path to single cell video (.avi), or directory of videos.")
