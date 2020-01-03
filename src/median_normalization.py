@@ -27,12 +27,12 @@ def median_normalize(vid_name, vid_path, out_path):
 	medians = []
 	reader = imageio.get_reader(vid_path)
 	for frame in reader:
-		frame_array = np.array(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
-		flat_frame = frame_array.flatten()
+		grayscale_frame = np.array(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
+		flat_frame = grayscale_frame.flatten()
 		flat_frame[flat_frame > 0]
 		medians.append(np.median(flat_frame))
 
-	medians = np.array(medians)
+	medians = np.array(medians, dtype=np.uint8)
 	max_median = np.max(medians)
 	adjusted_medians = medians - max_median
 
@@ -43,12 +43,12 @@ def median_normalize(vid_name, vid_path, out_path):
 	writer = cv2.VideoWriter(output, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
 		fps, size)
 	for i, frame in enumerate(reader):
-		frame_array = np.array(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
-		flat_frame = frame_array.flatten()
-		out_frame = [pixel + adjusted_medians[i] if pixel != 0 else 0 for pixel in flat_frame]
-		out_frame = np.array(out_frame, dtype=np.uint8).reshape(size)
-		color_img = cv2.cvtColor(out_frame, cv2.COLOR_GRAY2BGR)
-		writer.write(color_img)
+		grayscale_frame = np.array(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
+		flat_frame = grayscale_frame.flatten()
+		flat_frame[flat_frame != 0] += adjusted_medians[i]
+		out_frame = np.array(flat_frame, dtype=np.uint8).reshape(size)
+		color_frame = cv2.cvtColor(out_frame, cv2.COLOR_GRAY2RGB)
+		writer.write(color_frame)
 
 	reader.close()
 	writer.release()

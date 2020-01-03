@@ -23,7 +23,7 @@ from ornet.affinityfunc import get_all_aff_tables
 from ornet.extract_helper import generate_singles
 from ornet.median_normalization import median_normalize as normalize
 
-def constrain_vid(vid_path, full_path, frame_num):
+def constrain_vid(vid_path, out_path, frame_num):
 	'''
 	Constrains the input video to specified number of frames, and write the 
 	result to an output video. If the video contains less frames than 
@@ -33,7 +33,7 @@ def constrain_vid(vid_path, full_path, frame_num):
 	----------
 	vid_path: String
 		Path to the input video.
-	full_path: String
+	out_path: String
 		Path to the output video.
 	frame_num: int
 		Maximum number of frames to extract from the video.
@@ -45,7 +45,7 @@ def constrain_vid(vid_path, full_path, frame_num):
 	reader = imageio.get_reader(vid_path)
 	fps = reader.get_meta_data()['fps']
 	size = reader.get_meta_data()['size']
-	writer = cv2.VideoWriter(full_path, 
+	writer = cv2.VideoWriter(out_path, 
 			cv2.VideoWriter_fourcc('M','J','P','G'), 
 			fps, size)
 
@@ -130,7 +130,7 @@ def gray_to_avi(vid_name, gray_path, original_path, out_path):
 	writer = cv2.VideoWriter(os.path.join(out_path, vid_name + '.avi'),
 		cv2.VideoWriter_fourcc('m', 'j', 'p', 'g'), fps, size)
 	for frame in gray_vid:
-		writer.write(cv2.cvtColor(frame, cv2.COLOR_GRAY2BGR))
+		writer.write(cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB))
 
 	writer.release()
 
