@@ -1,4 +1,3 @@
-
 import os
 import argparse
 from functools import partial
@@ -7,7 +6,8 @@ import joblib
 import numpy as np
 
 from ornet.gmm.loss import normpdf
-from ornet.measure import multivariate_js, multivariate_kl, multivariate_hellinger
+from ornet.measure import multivariate_js, multivariate_kl, \
+    multivariate_hellinger
 
 
 def aff_by_eval(means, covars):
@@ -69,7 +69,6 @@ def aff_JS_div(means, covars):
     return aff_Table
 
 
-
 def aff_hellinger(means, covars):
     """
     Applies Jensen-Shannon divergence to each pair of intermediates to create an affinity
@@ -81,7 +80,8 @@ def aff_hellinger(means, covars):
     for i, (mean_1, covar_1) in enumerate(zip(means, covars)):
         # find the probability for every mean point in the current component
         for j, (mean_2, covar_2) in enumerate(zip(means, covars)):
-            aff_Table[i, j] = multivariate_hellinger(mean_1, covar_1, mean_2, covar_2)
+            aff_Table[i, j] = multivariate_hellinger(mean_1, covar_1, mean_2,
+                                                     covar_2)
         # transpose the probabilities and append them as a column
     return aff_Table
 
@@ -108,12 +108,14 @@ def get_all_aff_tables(means, covars, aff_funct):
         'probability': aff_by_eval,
         'KL div': aff_KL_div,
         'JS div': aff_JS_div,
-	'Hellinger': aff_hellinger
+        'Hellinger': aff_hellinger
     }
     aff_Tables = [aff_dispatch[aff_funct](means[0], covars[0])]
     for i in range(1, means.shape[0]):
         aff_Tables = np.append(aff_Tables, [aff_dispatch[aff_funct](means[i],
-                               covars[i])], axis=0)
+                                                                    covars[
+                                                                        i])],
+                               axis=0)
     return aff_Tables
 
 
@@ -132,7 +134,7 @@ if __name__ == "__main__":
     # Optional arguments.
     parser.add_argument("-o", "--output", default=os.path.join(cwd, "videos"),
                         help=("Destination path for affinity tables."
-                        " [DEFAULT: cwd]"))
+                              " [DEFAULT: cwd]"))
     parser.add_argument("-a", "--affinity_type", default='probability',
                         help=("Degree of parallelism for reading in videos."
                               " 'probability' is A -> B = A(B).",

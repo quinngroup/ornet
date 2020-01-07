@@ -3,6 +3,7 @@ import numpy as np
 import skimage
 import skimage.color as color
 
+
 def read_image(Ipath):
     """
     Reads an image off the filesystem and converts it to a
@@ -20,6 +21,7 @@ def read_image(Ipath):
     """
     img = imageio.imread(Ipath)
     return skimage.img_as_ubyte(skimage.color.rgb2gray(img))
+
 
 def img_to_px(image):
     """
@@ -48,5 +50,5 @@ def img_to_px(image):
     # Finally, we repeat each index by the number of times of its pixel value.
     # That is our X--consider each pixel an "event", and its value is the
     # number of times that event is observed.
-    X = np.repeat(z, image.flatten(), axis = 0)
+    X = np.repeat(z, image.flatten(), axis=0)
     return X
