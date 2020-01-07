@@ -21,7 +21,7 @@ Inside of the root directory of this project run either
 
 This installation process should install all of the required dependencies.
 In the event that some of the packages are not installed properly,
-please refer to the dependicies section and manually install all that are listed.
+please refer to the dependencies section and manually install all that are listed.
 
 # Testing
 Inside of the "tests" sub-directory, run the following command:
