@@ -5,6 +5,7 @@ from sklearn.mixture import GaussianMixture
 
 from ornet.gmm import image, params, viz
 
+
 def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     """
     Runs a warm-start GMM over evenly-spaced frames of the video.
@@ -30,7 +31,7 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         The k precision matrices for each of f frames.
     """
     img = vid[0]
-    if(vizual):
+    if vizual:
         plt.imshow(img)
         plt.show()
     X = image.img_to_px(img)
@@ -42,7 +43,7 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     gmmodel = GaussianMixture(n_components=CV.shape[0], weights_init=PI,
                               means_init=MU, precisions_init=PR)
     gmmodel.fit(X)
-    if(vizual):
+    if vizual:
         viz.plot_results(gmmodel.means_, gmmodel.covariances_,
                          0, img.shape[1], 0, img.shape[0], 0, 'this')
 
@@ -51,12 +52,12 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     weights = [gmmodel.weights_]
     precisions = [gmmodel.precisions_]
 
-# set warm start to true to use previous parameters
+    # set warm start to true to use previous parameters
     gmmodel.warm_start = True
 
-    for i in range(0+skipframes, vid.shape[0], skipframes):
+    for i in range(0 + skipframes, vid.shape[0], skipframes):
         img = vid[i]
-        if(vizual):
+        if vizual:
             plt.imshow(img)
             plt.show()
 
@@ -67,7 +68,7 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         weights = np.append(weights, [gmmodel.weights_], axis=0)
         precisions = np.append(precisions, [gmmodel.precisions_], axis=0)
 
-        if(vizual):
+        if vizual:
             viz.plot_results(gmmodel.means_, gmmodel.covariances_,
                              0, img.shape[1], 0, img.shape[0], 0, 'this')
 

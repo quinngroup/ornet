@@ -2,7 +2,8 @@ import numpy as np
 import scipy.linalg as sla
 import scipy.stats as stats
 
-def normpdf(X, mu, sigma, method = 'direct'):
+
+def normpdf(X, mu, sigma, method='direct'):
     """
     Evaluates the PDF under the current GMM parameters.
 
@@ -37,13 +38,14 @@ def normpdf(X, mu, sigma, method = 'direct'):
             p = np.einsum('ni,ji,ni->n', X - mu, inv, X - mu)
             n = 1 / ((((2 * np.pi) ** d) * det) ** 0.5)
             px = np.exp(-0.5 * p) * n
-    else: # SciPy
+    else:  # SciPy
         if d == 1:
             rv = stats.norm(mu, sigma)
         else:
             rv = stats.multivariate_normal(mu, sigma)
         px = rv.pdf(X)
     return px
+
 
 def kl(X, px, m, K):
     """
@@ -65,14 +67,15 @@ def kl(X, px, m, K):
     kl : float
         KL-divergence between the ground-truth and learned distributions.
     """
-    qx = np.zeros(shape = px.shape)
+    qx = np.zeros(shape=px.shape)
     for mj, (mu, sigma) in zip(m, K):
-        qx += mj * stats.norm.pdf(X, loc = mu, scale = sigma)
+        qx += mj * stats.norm.pdf(X, loc=mu, scale=sigma)
 
     # All done.
     return stats.entropy(px, qx)
 
-def log_likelihood(X, m, mu, sigma, method = 'direct'):
+
+def log_likelihood(X, m, mu, sigma, method='direct'):
     """
     Computes the log-likelihood of the data, given the model parameters.
 
@@ -104,5 +107,5 @@ def log_likelihood(X, m, mu, sigma, method = 'direct'):
 
     n = np.zeros(N)
     for k in range(K):
-        n += m[k] * normpdf(X, mu[k], sigma[k], method = method)
+        n += m[k] * normpdf(X, mu[k], sigma[k], method=method)
     return np.log(n).sum()

@@ -17,6 +17,6 @@ setuptools.setup(
 		'scikit-image',
 		'scikit-learn',
 		'imageio-ffmpeg',
-		#opencv-python>=4.0.0
+		'opencv-python>=4.0.0'
 	]
 )

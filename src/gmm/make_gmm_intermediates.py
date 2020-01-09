@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # Optional arguments.
     parser.add_argument("-o", "--output", default=os.path.join(cwd, "videos"),
                         help=("Destination path for intermediates."
-                        " [DEFAULT: cwd]"))
+                              " [DEFAULT: cwd]"))
     parser.add_argument("-s", "--skipframes", default=1,
                         help=("Number of frames to skip (downsample) when"
                               " reading videos. [DEFAULT: 1]"))
