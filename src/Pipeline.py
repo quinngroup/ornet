@@ -24,7 +24,8 @@ from ornet.extract_helper import generate_singles
 from ornet.median_normalization import median_normalize as normalize
 
 
-def constrain_vid(vid_path, full_path, frame_num):
+
+def constrain_vid(vid_path, out_path, frame_num):
     '''
     Constrains the input video to specified number of frames, and write the
     result to an output video. If the video contains less frames than
@@ -34,7 +35,7 @@ def constrain_vid(vid_path, full_path, frame_num):
     ----------
     vid_path: String
         Path to the input video.
-    full_path: String
+    out_path: String
         Path to the output video.
     frame_num: int
         Maximum number of frames to extract from the video.
@@ -46,7 +47,7 @@ def constrain_vid(vid_path, full_path, frame_num):
     reader = imageio.get_reader(vid_path)
     fps = reader.get_meta_data()['fps']
     size = reader.get_meta_data()['size']
-    writer = cv2.VideoWriter(full_path,
+    writer = cv2.VideoWriter(out_path,
                              cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                              fps, size)
 
@@ -60,7 +61,6 @@ def constrain_vid(vid_path, full_path, frame_num):
 
     reader.close()
     writer.release()
-
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
@@ -181,7 +181,6 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
 
     reader.close()
     writer.release()
-
 
 def generate_single_vids(vid_path, masks_path, output_path):
     '''

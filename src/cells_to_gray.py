@@ -33,11 +33,10 @@ def vid_to_gray(vid_path, out_path):
     frames = []
     reader = imageio.get_reader(vid_path)
     for frame in reader:
-        frames.append(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
+        frames.append(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
 
     reader.close()
     np.save(os.path.join(out_path, str(vid_name) + '.npy'), frames)
-
 
 if __name__ == "__main__":
 
