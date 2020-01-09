@@ -30,7 +30,7 @@ Inside of the "tests" sub-directory, run the following command:
 python ornet_tests.py
 ```
 
-6 tests, from various checkpoints along the pipeline, should run without any failures.
+7 tests, from various checkpoints along the pipeline, should run without any failures.
 
 # Usage
 Ornet can be utilized by calling the Pipeline module from either the command line interface or in a script.
