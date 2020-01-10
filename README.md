@@ -12,7 +12,7 @@ joblib, imageio, scikit-image, scikit-learn, imageio-ffmpeg,
 opencv-python>=4
 
 **Python version:**
-Python >= 3.7
+This software works in python versions 3.6 - 3.8
 
 # Installation
 Inside of the root directory of this project run either
