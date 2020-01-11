@@ -112,15 +112,3 @@ class Test_Pipeline(unittest.TestCase):
 			self.assertTrue(False)
 
 		self.assertTrue(True)
-'''
-if __name__ == '__main__':
-
-	os.makedirs(out_path, exist_ok=True)
-	os.makedirs(downsampled_path, exist_ok=True)
-	os.makedirs(singles_path, exist_ok =True)
-	os.makedirs(intermediates_path, exist_ok =True)
-	os.makedirs(distances_path, exist_ok=True)
-	os.makedirs(tmp_path, exist_ok=True)
-	
-	unittest.main(exit=False)
-'''
