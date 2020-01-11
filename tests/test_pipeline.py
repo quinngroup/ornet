@@ -20,7 +20,7 @@ intermediates_path = os.path.join(out_path, 'intermediates')
 distances_path = os.path.join(out_path, 'distances')
 tmp_path = os.path.join(out_path, 'tmp')
 
-class OrnetTests(unittest.TestCase):
+class Test_Pipeline(unittest.TestCase):
 
 	def test_cell_segmentation(self):
 		'''
@@ -112,7 +112,7 @@ class OrnetTests(unittest.TestCase):
 			self.assertTrue(False)
 
 		self.assertTrue(True)
-
+'''
 if __name__ == '__main__':
 
 	os.makedirs(out_path, exist_ok=True)
@@ -123,3 +123,4 @@ if __name__ == '__main__':
 	os.makedirs(tmp_path, exist_ok=True)
 	
 	unittest.main(exit=False)
+'''
