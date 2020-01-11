@@ -10,6 +10,3 @@ install:
 script:
   - cd tests
   - coverage run --source=ornet -m unittest discover -s .
-after_success:
-  - pwd
-  - cd tests
