@@ -3,3 +3,6 @@
 **/.idea
 **.pyc
 **.DS_Store
+Makefile
+.coverage
+htmlcov
