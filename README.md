@@ -72,14 +72,14 @@ For any questions or change requests related to this project, please create an i
 ### Reporting Issues
 If you experinece any unexpected behavior with this software, please document it using this repository's [issues](https://github.com/quinngroup/ornet/issues) section. Please tag issues of this nature with the "unexpected behavior" label.
 
-##### Documentation Process
+***Documentation Process***
 1. Post a concise description of the unexpected behavior.
 2. Include a small code snippet that can reproduce the behavior.
 3. Describe the results of the snippet.
 4. Detail the expected results of the snippet.
 
-##### Issue fixes
-If you would like to submit a fix for our developers to review, complete the following steps:
+### Issue Solutions
+If you would like to submit a code fix for our developers to review, complete the following steps:
 1. If an issue does not already exist for this problem, create one according to the above documentation process.
 2. Fork the project.
 3. Apply your changes.
