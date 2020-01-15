@@ -15,9 +15,9 @@ opencv-python>=4
 This software works in python versions 3.6 - 3.8
 
 # Installation
-Inside of the root directory of this project run either
+Inside of the root directory of this project run:
 
-```pip install .``` or ```python setup.py install```
+```pip install .```
 
 This installation process should install all of the required dependencies.
 In the event that some of the packages are not installed properly,
