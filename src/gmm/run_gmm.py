@@ -18,6 +18,12 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         True will show images and nodes (default: False).
     skipframes : integer
         Number of frames to skip (downsampling constant).
+    threshold_abs: int
+        Absolute minimum pixel value to be used in 
+        scikit-image's peak_local max function
+    min_distance: int
+        Minimum distance between image peaks that will be 
+        returned by scikit-image's peak_local max function
 
     Returns
     -------
@@ -87,6 +93,12 @@ def run_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         True will show images and nodes (default: False).
     skipframes : integer
         Number of frames to skip (downsampling constant).
+    threshold_abs: int
+        Absolute minimum pixel value to be used in 
+        scikit-image's peak_local max function
+    min_distance: int
+        Minimum distance between image peaks that will be 
+        returned by scikit-image's peak_local max function
 
     Returns
     -------

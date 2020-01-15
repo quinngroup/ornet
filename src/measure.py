@@ -69,7 +69,9 @@ def multivariate_hellinger(u1, cov1, u2, cov2, gamma=0.00125):
     u1, u2 : array, shape (d,)
         Means of the two distributions.
     cov1, cov2 : array, shape (d, d)
-            Covariance matrices of the two distributions.
+        Covariance matrices of the two distributions.
+    gamma: float
+        Probability measure
 
     Returns
     -------
