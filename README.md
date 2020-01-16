@@ -16,7 +16,10 @@ This software has been tested on python versions 3.6 - 3.8.
 ## Installation
 Inside of the root directory of this project run:
 
-```pip install .```
+```
+pip install -r requirements.txt
+pip install .
+```
 
 This installation process should install all of the required dependencies.
 In the event that some of the packages are not installed properly,
