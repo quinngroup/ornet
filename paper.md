@@ -56,5 +56,5 @@ nocite: |
     @Hagberg:2008, @kiwisolver2018, 
     @Klein:2019, @Lee:2019,
     @Mcguire:2007, @opencv_library,
-    @scikit-image:2014
+    @scikit-image:2014, @Andrew_Durden-proc-scipy-2018
 ---
