@@ -1,7 +1,7 @@
 '''
-A script that passes input video(s) through the entire OrNet pipeline. 
-The pipeline consists of cell segmentation, graph vertex construction 
-via Gaussian mixture model means, edge construction via divergence 
+A script that passes input video(s) through the entire OrNet pipeline.
+The pipeline consists of cell segmentation, graph vertex construction
+via Gaussian mixture model means, edge construction via divergence
 functions, and eigen-decomposition of the matrix representation.
 '''
 # Author: Marcus Hill
@@ -360,18 +360,18 @@ def run(input_path, initial_masks_dir, output_path):
         shutil.rmtree(downsampled_path)
         shutil.rmtree(tmp_path)
 
+def main():
+        parser = argparse.ArgumentParser(description='An end-to-end '
+                                        + 'pipeline of OrNet.')
+        parser.add_argument('-i', '--input',
+                help='Input directory containing video(s).', required=True)
+        parser.add_argument('-m', '--masks',
+                help='Input directory containing vtk mask(s).', required=True)
+        parser.add_argument('-o', '--output',
+                help='Output directory to save files.', default=os.getcwd())
+        args = vars(parser.parse_args())
+
+        run(args['input'], args['masks'], args['output'])
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='An end-to-end '
-                                                 + 'pipeline of OrNet.')
-    parser.add_argument('-i', '--input',
-                        help='Input directory containing video(s).',
-                        required=True)
-    parser.add_argument('-m', '--masks',
-                        help='Input directory containing vtk mask(s).',
-                        required=True)
-    parser.add_argument('-o', '--output',
-                        help='Output directory to save files.',
-                        default=os.getcwd())
-    args = vars(parser.parse_args())
-    run(args['input'], args['masks'], args['output'])
+    main()
