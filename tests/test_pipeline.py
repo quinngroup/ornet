@@ -112,3 +112,6 @@ class Test_Pipeline(unittest.TestCase):
 			self.assertTrue(False)
 
 		self.assertTrue(True)
+
+if __name__ == '__main__':
+    unittest.main()
