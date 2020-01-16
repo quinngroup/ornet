@@ -29,7 +29,7 @@ please refer to the dependencies section and manually install all that are liste
 Inside of the "tests" sub-directory, run the following command:
 
 ```
-python ornet_tests.py
+python tests.py
 ```
 
 7 tests, from various checkpoints along the pipeline, should run without any failures.
