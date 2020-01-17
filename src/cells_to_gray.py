@@ -36,7 +36,7 @@ def vid_to_gray(vid_path, out_path, progress=True):
     reader = imageio.get_reader(vid_path)
     if progress:
         progress_bar = tqdm(total=reader.count_frames())
-        progress_bar.set_description('Converting to Gray')
+        progress_bar.set_description('Converting to gray')
 
     for frame in reader:
         frames.append(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))

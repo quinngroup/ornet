@@ -374,7 +374,7 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
         single_vids = os.listdir(tmp_path)
 
         progress_bar = tqdm(total=len(single_vids))
-        progress_bar.set_description('Converting to Gray')
+        progress_bar.set_description('Converting to gray')
         for single in single_vids:
             convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
             shutil.move(os.path.join(tmp_path, single),
