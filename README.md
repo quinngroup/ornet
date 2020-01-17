@@ -1,5 +1,5 @@
 # OrNet [![Build Status](https://travis-ci.org/quinngroup/ornet.svg?branch=master)](https://travis-ci.org/quinngroup/ornet) ![Python status](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue) [![status](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef/status.svg)](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef)
-Tracking *diffuse* organelles presents more challenges than just characterizing movement– their structures morph into/out of each other much more fluidly than discrete cells. Structural changes in organelles can offer key insight into cellular proccesses. **OrNet** is a Python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
+Tracking *diffuse* organelles presents more challenges than just characterizing movement– their structures morph into/out of each other much more fluidly than discrete cells. Structural changes in organelles can offer key insight into cellular proccesses. **OrNet** is a python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
 
 
 <img src="img/MitoEx.png" width="400">
@@ -52,10 +52,10 @@ that represent the divergence metrics between components of the GMM.
 
 ### Command Line Interface:
 ```
-python -m ornet -i <input video or directory> -m <mask directory> -o <output directory>
+python -m ornet -i <input video or directory> -m <mask directory> -o <output directory> -c <constrain count>
 ```
 
-For more detailed information regarding command line options the "-h" flag can be utilized
+For more detailed information regarding the command line options, use the "-h" flag.
 
 ```
 python -m ornet -h

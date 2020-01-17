@@ -19,16 +19,16 @@ from ornet.gmm.run_gmm import skl_gmm
 from ornet.cells_to_gray import vid_to_gray
 from ornet.track_cells import track_cells
 from ornet.affinityfunc import get_all_aff_tables
-from ornet.extract_cells import generate_singles
+from ornet.extract_cells import extract_cells
 from ornet.median_normalization import median_normalize as normalize
 
 
 
-def constrain_vid(vid_path, out_path, frame_num):
+def constrain_vid(vid_path, out_path, constrain_count):
     '''
     Constrains the input video to specified number of frames, and write the
-    result to an output video. If the video contains less frames than
-    frame_num, then then all frames of the video are returned.
+    result to an output video (.avi). If the video contains less frames than
+    constrain_count, then then all frames of the video are returned.
 
     Parameters
     ----------
@@ -36,8 +36,9 @@ def constrain_vid(vid_path, out_path, frame_num):
         Path to the input video.
     out_path: String
         Path to the output video.
-    frame_num: int
-        Maximum number of frames to extract from the video.
+    constrain_count: int
+        First N number of frames to extract from the video.
+        If value is -1, then the entire video is used.
 
     Returns
     ----------
@@ -49,12 +50,14 @@ def constrain_vid(vid_path, out_path, frame_num):
     writer = cv2.VideoWriter(out_path,
                              cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                              fps, size)
+    if constrain_count == -1:
+        constrain_count = reader.count_frames()
 
     i = 0
-    progress_bar = tqdm(total=frame_num)
+    progress_bar = tqdm(total=constrain_count)
     progress_bar.set_description('Constraining video')
     for frame in reader:
-        if i == frame_num:
+        if i == constrain_count:
             break
         else:
             writer.write(frame)
@@ -64,7 +67,6 @@ def constrain_vid(vid_path, out_path, frame_num):
     reader.close()
     writer.release()
     progress_bar.close()
-    print('\n') #Add a new line after progress bar
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
@@ -88,7 +90,7 @@ def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     np.save(os.path.join(out_path, vid_name + 'MASKS.npy'), masks)
 
 
-def median_normalize(vid_name, gray_path, out_path):
+def median_normalize(vid_name, input_path, out_path):
     '''
     Applies median normalization to a grayscale input video (.npy)
 
@@ -96,7 +98,7 @@ def median_normalize(vid_name, gray_path, out_path):
     ----------
     vid_name: String
         Name of the input video.
-    gray_path: String
+    input_path: String
         Path to the grayscale video (.npy file).
     out_path: String
         Directory to save the normalized video.
@@ -105,7 +107,7 @@ def median_normalize(vid_name, gray_path, out_path):
     ----------
     NoneType object
     '''
-    normalize(vid_name, gray_path, out_path)
+    normalize(vid_name, input_path, out_path)
 
 
 def gray_to_avi(vid_name, gray_path, original_path, out_path):
@@ -147,8 +149,9 @@ def gray_to_avi(vid_name, gray_path, original_path, out_path):
 def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
                    frame_skip):
     '''
-    Takes an input video and return a downsampled version of it, by
-    skipping a specified number of frames.
+    Takes an input video and saves a downsampled version 
+    of it, by skipping a specified number of frames. The
+    saved video is (.avi) format.
 
     Parameters
     ----------
@@ -179,12 +182,16 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
     writer = cv2.VideoWriter(os.path.join(downsampled_path, vid_name + '.avi'),
                              cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
                              fps, size)
+    progress_bar  = tqdm(total=reader.count_frames())
+    progress_bar.set_description('      Downsampling')
     for i, frame in enumerate(reader):
         if i % frame_skip == 0:
             writer.write(frame)
+        progress_bar.update()
 
     reader.close()
     writer.release()
+    progress_bar.close()
 
 def generate_single_vids(vid_path, masks_path, output_path):
     '''
@@ -203,7 +210,7 @@ def generate_single_vids(vid_path, masks_path, output_path):
     ----------
     NoneType object
     '''
-    generate_singles(vid_path, masks_path, output_path)
+    extract_cells(vid_path, masks_path, output_path)
 
 
 def convert_to_grayscale(vid_path, output_path):
@@ -283,7 +290,7 @@ def compute_distances(intermediates_path, output_path):
                 table)
 
 
-def run(input_path, initial_masks_dir, output_path):
+def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
     '''
     Runs the entire ornet pipeline from start to finish for any video(s)
     found at the input path location.
@@ -293,10 +300,13 @@ def run(input_path, initial_masks_dir, output_path):
     input_path: String
         Path to input video(s).
     initial_masks_dir: String
-        Path to the directory contatining the initial segmentation mask that
-        corresponds with the input video.
+        Path to the directory contatining the initial 
+        segmentation mask that corresponds with the input 
+        video.
     output_path: String
         Path to the output directory.
+    constrain_count: int
+        The first N number of frames of the video to use.
 
     Returns
     ----------
@@ -340,7 +350,8 @@ def run(input_path, initial_masks_dir, output_path):
         os.makedirs(distances_path, exist_ok=True)
         os.makedirs(tmp_path, exist_ok=True)
 
-        constrain_vid(os.path.join(input_dir, vid), full_video, 20000)
+        constrain_vid(os.path.join(input_dir, vid), full_video, 
+                      constrain_count)
         cell_segmentation(vid_name, full_video,
                           os.path.join(initial_masks_dir, vid_name + '.vtk'),
                           out_path)
@@ -364,3 +375,4 @@ def run(input_path, initial_masks_dir, output_path):
         shutil.rmtree(normalized_path)
         shutil.rmtree(downsampled_path)
         shutil.rmtree(tmp_path)
+        print()

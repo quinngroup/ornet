@@ -34,15 +34,16 @@ def parse_cli(args):
     parser.add_argument('-m', '--masks',
                         help='Input directory containing vtk mask(s).',
                         required=True)
-    parser.add_argument('-o', '--output',
-                        help='Output directory to save files.',
-                        default=os.getcwd())
+    parser.add_argument('-o', '--output', default=os.getcwd(),
+                        help='Output directory to save files.')
+    parser.add_argument('-c', '--count', type=int, default=-1,
+                        help='First N frames of video to use. Default is all.')
     return vars(parser.parse_args(args))
 
 
 def main(system_args):
     args = parse_cli(system_args[1:])
-    pipeline.run(args['input'], args['masks'], args['output'])
+    pipeline.run(args['input'], args['masks'], args['output'], args['count'])
 
 if __name__ == '__main__':
     main(sys.argv)
