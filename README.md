@@ -52,13 +52,13 @@ that represent the divergence metrics between components of the GMM.
 
 ### Command Line Interface:
 ```
-python -m ornet.Pipeline -i <input video or directory> -m <mask directory> -o <output directory>
+python -m ornet -i <input video or directory> -m <mask directory> -o <output directory>
 ```
 
 For more detailed information regarding command line options the "-h" flag can be utilized
 
 ```
-python -m ornet.Pipeline -h
+python -m ornet -h
 ```
 
 ### Python script:

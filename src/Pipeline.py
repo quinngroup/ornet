@@ -9,7 +9,6 @@ functions, and eigen-decomposition of the matrix representation.
 import os
 import re
 import shutil
-import argparse
 
 import cv2
 import joblib
@@ -360,7 +359,7 @@ def run(input_path, initial_masks_dir, output_path):
         shutil.rmtree(downsampled_path)
         shutil.rmtree(tmp_path)
 
-
+'''
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='An end-to-end '
                                                  + 'pipeline of OrNet.')
@@ -375,3 +374,4 @@ if __name__ == '__main__':
                         default=os.getcwd())
     args = vars(parser.parse_args())
     run(args['input'], args['masks'], args['output'])
+'''

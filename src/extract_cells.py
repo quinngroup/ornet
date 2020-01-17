@@ -1,11 +1,11 @@
 '''
-extract_cells
 This script will take in both a video from a directory and an
 initial masking image of the first frame. It will then create contours for
 each subsequent frame and use those contours to mask out each cell. It will
 then save each cell in their own video
 '''
 # Author : Andrew Durden
+
 import argparse
 from functools import partial
 import os
@@ -40,17 +40,10 @@ def extract_cells(vidfile, maskfile, show_video=False):
         plt.imshow(im)
         plt.show()
 
-    # vf = cv2.VideoCapture(vidfile)    #OpenCV videocapture object
     vf = imageio.get_reader(vidfile)
-
-    # obtaining the frame dimensions
-    # X = int(vf.get(3)) #vf.get returns specific properties, 3 is width 4 is height
-    # Y = int(vf.get(4))
-
     frameNum = 0
     number_of_segments = len(
         np.unique(im)) - 1  # defines number of segs from vtk
-    print(number_of_segments)
     outs = []
     ims = list()
     masks = list()
@@ -73,13 +66,6 @@ def extract_cells(vidfile, maskfile, show_video=False):
         masks.append(im != i + 1)
 
     for frameNum, frame in enumerate(vf):  # while( vf.isOpened() ):
-        # for i in range(3):#skips to every third frame
-        # frameNum += 1 #advance through frames
-        # if(frameNum == 1):
-        # for i in range(13210):
-        # frameNum += 1
-        # ret, frame = vf.read()
-        # print(vf.isOpened())
         for i in range(
                 number_of_segments):  # adds a copy of the current frame for each segment
             ims.append(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
@@ -130,14 +116,11 @@ def extract_cells(vidfile, maskfile, show_video=False):
                             dilates[s] = cv2.bitwise_xor(dilates[s], b_and)
                             dilates[t] = cv2.bitwise_xor(dilates[t], b_and)
 
-        for conts in range(
-                number_of_segments):  # bulds the contours and draws them onto the frame
-            # contours.append(cv2.findContours( dilates[conts], cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1])
+        for conts in range(number_of_segments):  # bulds the contours and draws them onto the frame
             contours.append(cv2.findContours(dilates[conts], cv2.RETR_TREE,
                                              cv2.CHAIN_APPROX_SIMPLE)[0])
             cv2.drawContours(frame, contours[conts], -1, colors[conts], 2)
-            if (
-                    conts == number_of_segments - 1 and show_video):  # prints contours frame by frame
+            if (conts == number_of_segments - 1 and show_video):  # prints contours frame by frame
                 cv2.putText(frame, 'Frame # ' + str(frameNum), (10, 40), font,
                             0.5, (0, 255, 50), 1)
                 cv2.imshow("Keypoints2", frame)
@@ -191,9 +174,6 @@ if __name__ == '__main__':
     out = extract_cells(vidfile=args['input'], maskfile=args['masks'],
                         show_video=args['showvid'])
     fname = vidpath.split("/")[-1].split(".")[0]
-    # print(len(them[0]),len(them[1]))
-    # write the files out
-
     fname = "{}.npy".format(fname + 'MASKS')
     outfile = os.path.join(args['output'], fname)
     np.save(outfile, out)
