@@ -6,15 +6,16 @@ then save each cell in their own video
 '''
 # Author : Andrew Durden
 
+import os
+import random
 import argparse
 from functools import partial
-import os
 
 import cv2
-from matplotlib import pyplot as plt
 import imageio
 import numpy as np
-import random
+from tqdm import tqdm
+from matplotlib import pyplot as plt
 
 
 def extract_cells(vidfile, maskfile, show_video=False):
@@ -55,23 +56,21 @@ def extract_cells(vidfile, maskfile, show_video=False):
     kernel = np.ones((17, 17), np.uint8)  # kernel for opening
     kernel2 = np.ones((3, 3), np.uint8)  # kernel for dilation
     font = cv2.FONT_HERSHEY_SIMPLEX  # font for frame count
-
-    for cols in range(
-            number_of_segments):  # creates random colors to use for the outlines
+        
+    for cols in range(number_of_segments):  # creates random colors to use for the outlines
         colors.append((random.randint(1, 255), random.randint(0, 255),
                        random.randint(1, 255)))
 
-    for i in range(
-            number_of_segments):  # separates each mask from the vtk and lists them
+    for i in range(number_of_segments):  # separates each mask from the vtk and lists them
         masks.append(im != i + 1)
 
+    progress_bar = tqdm(total=vf.count_frames())
+    progress_bar.set_description('Tracking cells')
     for frameNum, frame in enumerate(vf):  # while( vf.isOpened() ):
-        for i in range(
-                number_of_segments):  # adds a copy of the current frame for each segment
+        for i in range(number_of_segments):  # adds a copy of the current frame for each segment
             ims.append(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
 
-        for i in range(
-                number_of_segments):  # blacks out all that isn't in the initial mask for each segment
+        for i in range(number_of_segments):  # blacks out all that isn't in the initial mask for each segment
             if (frameNum == 0):
                 ims[i][masks[i]] = 0
             else:
@@ -136,7 +135,9 @@ def extract_cells(vidfile, maskfile, show_video=False):
         del ims[:]
         del contours[:]
         del masks[:]
+        progress_bar.update()
 
+    progress_bar.close()
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 

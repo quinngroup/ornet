@@ -11,9 +11,9 @@ import re
 import shutil
 
 import cv2
-import joblib
 import imageio
 import numpy as np
+from tqdm import tqdm
 
 from ornet.gmm.run_gmm import skl_gmm
 from ornet.cells_to_gray import vid_to_gray
@@ -51,15 +51,19 @@ def constrain_vid(vid_path, out_path, frame_num):
                              fps, size)
 
     i = 0
+    progress_bar = tqdm(total=reader.count_frames())
+    progress_bar.set_description('Constraining video')
     for frame in reader:
         if i == frame_num:
             break
         else:
             writer.write(frame)
             i += 1
+        progress_bar.update()
 
     reader.close()
     writer.release()
+    progress_bar.close()
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
@@ -358,20 +362,3 @@ def run(input_path, initial_masks_dir, output_path):
         shutil.rmtree(normalized_path)
         shutil.rmtree(downsampled_path)
         shutil.rmtree(tmp_path)
-
-'''
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='An end-to-end '
-                                                 + 'pipeline of OrNet.')
-    parser.add_argument('-i', '--input',
-                        help='Input directory containing video(s).',
-                        required=True)
-    parser.add_argument('-m', '--masks',
-                        help='Input directory containing vtk mask(s).',
-                        required=True)
-    parser.add_argument('-o', '--output',
-                        help='Output directory to save files.',
-                        default=os.getcwd())
-    args = vars(parser.parse_args())
-    run(args['input'], args['masks'], args['output'])
-'''
