@@ -86,7 +86,7 @@ def aff_hellinger(means, covars):
     return aff_Table
 
 
-def get_all_aff_tables(means, covars, aff_funct):
+def get_all_aff_tables(means, covars, aff_funct, progress=True):
     """
     finds all affinity table for a set of Frames
     each with lists of means and covariances
@@ -97,6 +97,11 @@ def get_all_aff_tables(means, covars, aff_funct):
         the list of lists of means with f frames and k nodes
     covars : array, shape (k, 2, 2)
         the list of lists of covars with f frames with k nodes
+    aff_funct: string
+        the affinity metric that will be applied to the 
+        distributions
+    progress: bool
+        flag to display a progress bar
 
     Returns
     -------
@@ -112,10 +117,12 @@ def get_all_aff_tables(means, covars, aff_funct):
     }
     aff_Tables = [aff_dispatch[aff_funct](means[0], covars[0])]
     for i in range(1, means.shape[0]):
-        aff_Tables = np.append(aff_Tables, [aff_dispatch[aff_funct](means[i],
-                                                                    covars[
-                                                                        i])],
-                               axis=0)
+        aff_Tables = np.append(
+            aff_Tables, 
+            [aff_dispatch[aff_funct](means[i], covars[i])],
+            axis=0
+        )
+
     return aff_Tables
 
 

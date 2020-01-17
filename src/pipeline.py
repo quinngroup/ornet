@@ -252,6 +252,8 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
     file_names = os.listdir(vid_dir)
     gray_vids = [x for x in file_names if x.split('.')[-1] in ['npy']]
 
+    progress_bar = tqdm(total=len(gray_vids))
+    progress_bar.set_description('Computing GMM info')
     for vid_name in gray_vids:
         try:
             vid_path = os.path.join(vid_dir, vid_name)
@@ -263,6 +265,10 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
                      precs=precisions)
         except:
             print('Disappering cell: ' + vid_name)
+
+        progress_bar.update()
+
+    progress_bar.close()
 
 
 def compute_distances(intermediates_path, output_path):
@@ -282,13 +288,17 @@ def compute_distances(intermediates_path, output_path):
     '''
 
     intermediates = os.listdir(intermediates_path)
+    progress_bar = tqdm(total=len(intermediates))
+    progress_bar.set_description('Computing distance')
     for intermediate in intermediates:
         vid_inter = np.load(os.path.join(intermediates_path, intermediate))
         table = get_all_aff_tables(vid_inter['means'], vid_inter['covars'],
                                    'Hellinger')
         np.save(os.path.join(output_path, intermediate.split('.')[0] + '.npy'),
                 table)
-
+        progress_bar.update()
+    
+    progress_bar.close()
 
 def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
     '''
