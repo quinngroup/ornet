@@ -6,7 +6,7 @@ import os
 import sys
 import argparse
 
-import ornet.Pipeline as pipeline
+import ornet.pipeline as pipeline
 
 def parse_cli(args):
     '''

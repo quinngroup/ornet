@@ -6,7 +6,7 @@ A test suite for the ornet package.
 import os
 import unittest
 
-import ornet.Pipeline as pipeline
+import ornet.pipeline as pipeline
 
 input_path = './data/test_vid.avi'
 out_path = os.path.join('./data', 'outputs')
@@ -24,7 +24,7 @@ class Test_Pipeline(unittest.TestCase):
 
 	def test_cell_segmentation(self):
 		'''
-		Tests the cell segmentation function defined in extract_cells.py.
+		Tests the cell segmentation function defined in track_cells.py.
 		'''
 		try:
 			pipeline.cell_segmentation(vid_name, input_path, 
@@ -47,7 +47,7 @@ class Test_Pipeline(unittest.TestCase):
 
 	def test_downsample_vid(self):
 		'''
-		Tests the downsampling function defined in Pipeline.py
+		Tests the downsampling function defined in pipeline.py
 		'''
 
 		try:

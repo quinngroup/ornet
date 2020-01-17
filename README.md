@@ -35,8 +35,8 @@ python tests.py
 7 tests, from various checkpoints along the pipeline, should run without any failures.
 
 ## Usage
-Ornet can be utilized by calling the Pipeline module from either the command line interface or in a script.
-Pipeline will output a directory of the following structure:
+Ornet can be utilized by calling the pipeline module from either the command line interface or in a script.
+pipeline will output a directory of the following structure:
 
 ```
 ├── outputs/
@@ -63,7 +63,7 @@ python -m ornet -h
 
 ### Python script:
 ```
-from ornet import Pipeline as pipeline
+from ornet import pipeline as pipeline
 
 pipeline.run(input_path, mask_path, output_path)
 ```

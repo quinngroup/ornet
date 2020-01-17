@@ -17,9 +17,9 @@ from tqdm import tqdm
 
 from ornet.gmm.run_gmm import skl_gmm
 from ornet.cells_to_gray import vid_to_gray
-from ornet.extract_cells import extract_cells
+from ornet.track_cells import track_cells
 from ornet.affinityfunc import get_all_aff_tables
-from ornet.extract_helper import generate_singles
+from ornet.extract_cells import generate_singles
 from ornet.median_normalization import median_normalize as normalize
 
 
@@ -51,7 +51,7 @@ def constrain_vid(vid_path, out_path, frame_num):
                              fps, size)
 
     i = 0
-    progress_bar = tqdm(total=reader.count_frames())
+    progress_bar = tqdm(total=frame_num)
     progress_bar.set_description('Constraining video')
     for frame in reader:
         if i == frame_num:
@@ -64,6 +64,7 @@ def constrain_vid(vid_path, out_path, frame_num):
     reader.close()
     writer.release()
     progress_bar.close()
+    print('\n') #Add a new line after progress bar
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
@@ -83,7 +84,7 @@ def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     ----------
     NoneType object
     '''
-    masks = extract_cells(vid_path, masks_path, show_video=False)
+    masks = track_cells(vid_path, masks_path, show_video=False)
     np.save(os.path.join(out_path, vid_name + 'MASKS.npy'), masks)
 
 
@@ -318,6 +319,7 @@ def run(input_path, initial_masks_dir, output_path):
         quit(1)
 
     for vid in vids:
+        print(vid)
         out_path = os.path.join(output_path, 'outputs')
         vid_name = vid.split('.')[0]
         vid_name = re.sub(' \(2\)| \(Converted\)', '', vid_name)
