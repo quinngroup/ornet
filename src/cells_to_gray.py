@@ -11,9 +11,9 @@ import cv2
 import joblib
 import imageio
 import numpy as np
+from tqdm import tqdm
 
-
-def vid_to_gray(vid_path, out_path):
+def vid_to_gray(vid_path, out_path, progress=True):
     '''
     Converts the RGB video specified by the vid_path parameter into a grayscale numpy array.
     The resulting array is saved at the specified output path.
@@ -21,9 +21,11 @@ def vid_to_gray(vid_path, out_path):
     Parameters
     ----------
     vid_path: String
-        path to input video
+        Path to input video.
     out_path: String
-        path to output directory
+        Path to output directory.
+    progress: bool
+        Display a progress bar.
 
     Returns
     ----------
@@ -32,9 +34,17 @@ def vid_to_gray(vid_path, out_path):
     vid_name = os.path.split(vid_path)[1].split('.')[0]
     frames = []
     reader = imageio.get_reader(vid_path)
+    if progress:
+        progress_bar = tqdm(total=reader.count_frames())
+        progress_bar.set_description('Converting to Gray')
+
     for frame in reader:
         frames.append(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
+        if progress:
+            progress_bar.update()
 
+    if progress:
+        progress_bar.close()
     reader.close()
     np.save(os.path.join(out_path, str(vid_name) + '.npy'), frames)
 

@@ -229,7 +229,7 @@ def convert_to_grayscale(vid_path, output_path):
     NoneType object
     '''
 
-    vid_to_gray(vid_path, output_path)
+    vid_to_gray(vid_path, output_path, False)
 
 
 def compute_gmm_intermediates(vid_dir, intermediates_path):
@@ -362,11 +362,16 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
         generate_single_vids(os.path.join(downsampled_path, vid_name + '.avi'),
                              masks_path, tmp_path)
         single_vids = os.listdir(tmp_path)
+
+        progress_bar = tqdm(total=len(single_vids))
+        progress_bar.set_description('Converting to Gray')
         for single in single_vids:
             convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
             shutil.move(os.path.join(tmp_path, single),
                         os.path.join(singles_path, single))
+            progress_bar.update()
 
+        progress_bar.close()
         compute_gmm_intermediates(tmp_path, intermediates_path)
         compute_distances(intermediates_path, distances_path)
 

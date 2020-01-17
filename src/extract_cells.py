@@ -11,7 +11,7 @@ import argparse
 import cv2
 import imageio
 import numpy as np
-
+from tqdm import tqdm
 
 def extract_cells(vid_path, masks_path, output_path, show_vid=False):
     '''
@@ -48,6 +48,8 @@ def extract_cells(vid_path, masks_path, output_path, show_vid=False):
             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
             reader.get_meta_data()['fps'], (masks.shape[1], masks.shape[2])))
 
+    progress_bar = tqdm(total=reader.count_frames())
+    progress_bar.set_description('  Extracting cells')
     for i, frame in enumerate(reader):
         mask = cv2.cvtColor(masks[i], cv2.COLOR_GRAY2BGR)
         for j in range(segments):
@@ -62,7 +64,9 @@ def extract_cells(vid_path, masks_path, output_path, show_vid=False):
             if cv2.waitKey(1) == 27:
                 cv2.destroyAllWindows()
                 exit(0)
+        progress_bar.update()
 
+    progress_bar.close()
     if show_vid:
         cv2.destroyAllWindows()
 
