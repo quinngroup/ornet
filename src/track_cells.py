@@ -137,6 +137,7 @@ def track_cells(vidfile, maskfile, show_video=False):
         del masks[:]
         progress_bar.update()
 
+    vf.close()
     progress_bar.close()
     cv2.waitKey(0)
     cv2.destroyAllWindows()

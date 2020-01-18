@@ -297,7 +297,7 @@ def compute_distances(intermediates_path, output_path):
         np.save(os.path.join(output_path, intermediate.split('.')[0] + '.npy'),
                 table)
         progress_bar.update()
-    
+
     progress_bar.close()
 
 def run(input_path, initial_masks_dir, output_path, constrain_count=-1):

@@ -9,6 +9,6 @@ if __name__ == '__main__':
     suite.addTests([
         loader.loadTestsFromModule(module=test_pipeline)
     ])
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(warnings='ignore')
     runner.run(suite)
         

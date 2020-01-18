@@ -45,6 +45,7 @@ def vid_to_gray(vid_path, out_path, progress=True):
 
     if progress:
         progress_bar.close()
+
     reader.close()
     np.save(os.path.join(out_path, str(vid_name) + '.npy'), frames)
 
