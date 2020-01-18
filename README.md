@@ -37,7 +37,7 @@ python tests.py
 ## Usage
 ### Pipeline Outline
 
-<img src="img/ornet_diagram.png" width="1000">
+<img src="img/pipeline_diagram.png" width="1000">
 
 Ornet can be utilized by calling the pipeline module from either the command line interface or in a script.
 pipeline will output a directory of the following structure:
