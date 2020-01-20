@@ -1,10 +1,13 @@
 # OrNet [![Build Status](https://travis-ci.org/quinngroup/ornet.svg?branch=master)](https://travis-ci.org/quinngroup/ornet) ![Python status](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue) [![status](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef/status.svg)](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef)
-Tracking *diffuse* organelles presents more challenges than just characterizing movement– their structures morph into/out of each other much more fluidly than discrete cells. Structural changes in organelles can offer key insight into cellular proccesses. **OrNet** is a python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
+**OrNet** is a python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
 
 
 <img src="img/MitoEx.png" width="400">
 
 *Mitochondria in a single cell, with red flourescent tagging* 
+
+## Purpose
+Analyzing the morphological changes organelles undergo after exposure to external stimul is significant because some structures offer crucial insight into the manner in which human cells responds to viral or bacterial infections. This framework is intended to mitigate the need for manual inspection of flouresence microscopy videos to identify time points and frame regions where significant changes are occurring. Our framework is defined by three key components -- cell segmentation, graph construction, and spectral analysis.
 
 ## Dependencies
 **Required packages:** 
