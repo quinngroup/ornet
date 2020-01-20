@@ -42,9 +42,10 @@ python tests.py
 <img src="img/pipeline_diagram.png" width="1000">
 
 **Inputs:**
-OrNet accepts as input 
 
-The pipeline is composed of 7 tasks:
+The expected input is a single time-series video where the cells are fluorescently tagged to aid in the detection of sub-cellular organisms. (Note: We used a red fluorescent protein, DsRed2-Mito-7, in our experiments.)  
+
+The **pipeline** is composed of 7 tasks:
 
 1. Constraining the video (Optional)
 2. Tracking cell movements
@@ -55,7 +56,8 @@ The pipeline is composed of 7 tasks:
 7. Computing distance metrics
 
 **Outputs**:
-The pipeline will output a directory of the following structure:
+
+The output will be a directory of the following structure:
 ```
 ├── outputs/
 │   ├── singles/
