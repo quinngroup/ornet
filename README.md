@@ -49,12 +49,32 @@ python tests.py
 The **pipeline** is composed of 7 tasks:
 
 1. Constraining the video (Optional)
+
+   Truncates video frames after a specified number. This is optional, but useful, because in some time-lapse videos cells        stop moving after a period of time.  
+   
 2. Tracking cell movements
-3. Median Normalize each video frame
-4. Downsampling the video (Optional)
+   
+   Generates segmentation masks for every frame in the video, using the initial mask a a starting point. This is a necessary    step since cells move over time and the segmentation masks need to be updated accordingly.
+
+3. Median Normalize
+
+    Normalizes every frame in a video to minimize the effects lighting conditions may have had when constructing the videos. 
+
+4. Downsample the video and masks (Optional)
+
+    Skip a given number of frames in the both the video and masks to generate a smaller video. This is useful for vidoes         where cells slowly move over time, thus not any significant change is detected between many of the frames. 
+
 5. Extract individual cells
+
+   Seperate each cell found in the input video into their own videos using the segmentation masks generated from tracking the    cells movement. This is an important step in the pipeline because the framework constructs a graph to model a specific        organellar structure in single cell. Problems may arise if multiple cells are present in a frame because graph edges          may be constructed between organelles in different cells, so to prevent this each cell is extracted.
+
 6. Computing GMM intermediates
+
+   Regions of interests, or intesnisty peaks, a found within the first frame of the video and those locations are considered    the initial component means for the guassian mixture model (GMM). The pixel intensity variances around those regions          become the initial covariances, while the normalized pixel intensities found at the location of each mean is considered to    be the initial weights. Subsequently, the GMM is fit according to each frame, and the final means, covariances, weights,      and precisions are saved. The final means are considered the vertices in our graph. 
+
 7. Computing distance metrics
+  
+   A distance metric is applied to every combination pair of distributions from the GMM. The distances serves as the edges      weights between the vertices in our graph.  
 
 **Outputs**:
 
