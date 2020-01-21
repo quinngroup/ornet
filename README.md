@@ -1,5 +1,5 @@
 # OrNet [![Build Status](https://travis-ci.org/quinngroup/ornet.svg?branch=master)](https://travis-ci.org/quinngroup/ornet) ![Python status](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue) [![status](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef/status.svg)](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef)
-**OrNet** is a python pipeline for analyzing fluorescence microscopy imagery of mitochondrial protein patterns. 
+**OrNet** is a python pipeline for analyzing fluorescence microscopy imagery of organelles. 
 
 
 <img src="img/MitoEx.png" width="400">
@@ -7,7 +7,7 @@
 *Mitochondria in a single cell, with red flourescent tagging* 
 
 ## Purpose
-Analyzing the morphological changes organelles undergo after exposure to external stimul is significant because some structures offer crucial insight into the manner in which human cells responds to viral or bacterial infections. This framework is intended to mitigate the need for manual inspection of flouresence microscopy videos to identify time points and frame regions where significant changes are occurring. Our framework is defined by three key components -- cell segmentation, graph construction, and spectral analysis.
+Analyzing the morphological changes organelles undergo after exposure to external stimul is significant because some structures offer crucial insight into the manner in which human cells responds to viral or bacterial infections. This framework is intended to mitigate the need for manual inspection of flouresence microscopy videos to identify time points and frame regions where significant changes are occurring.
 
 ## Dependencies
 **Required packages:** 
@@ -70,11 +70,11 @@ The **pipeline** is composed of 7 tasks:
 
 6. Computing GMM intermediates
 
-   Regions of interests, or intesnisty peaks, a found within the first frame of the video and those locations are considered    the initial component means for the guassian mixture model (GMM). The pixel intensity variances around those regions          become the initial covariances, while the normalized pixel intensities found at the location of each mean is considered to    be the initial weights. Subsequently, the GMM is fit according to each frame, and the final means, covariances, weights,      and precisions are saved. The final means are considered the vertices in our graph. 
+   Regions of interests, or intesnisty peaks, a found within the first frame of the video and those locations are considered    the initial component means for the guassian mixture model (GMM). The pixel intensity variances around those regions          become the initial covariances, while the normalized pixel intensities found at the location of each mean is considered to    be the initial weights. Subsequently, the GMM is fit according to each frame, and the final means, covariances, weights,      and precisions are saved. The final means are considered the vertices in the graph. 
 
 7. Computing distance metrics
   
-   A distance metric is applied to every combination pair of distributions from the GMM. The distances serves as the edges      weights between the vertices in our graph.  
+   A distance metric is applied to every combination pair of distributions from the GMM. The distances serve as edge            weights between vertices in the graph.  
 
 **Outputs**:
 
