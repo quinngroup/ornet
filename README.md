@@ -100,7 +100,7 @@ Ornet can be utilized from either the command line interface or in a script.
 
 **Command Line Interface:**
 ```
-python -m ornet -i <input video or directory> -m <mask directory> -o <output directory> -c <constrain count>
+python -m ornet -i <input video or directory> -m <mask directory> -o <output directory> -c <constrain count> -d <downsample count>
 ```
 
 For more detailed information regarding the command line options, use the "-h" flag.
