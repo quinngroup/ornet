@@ -41,6 +41,10 @@ python tests.py
 
 <img src="img/pipeline_diagram.png" width="1000">
 
+**Concept:**
+
+Inspired by social networks, OrNet models the dynamic morphologies of organelles as social network graphs. Just as Twitter and Facebook capture the dynamic nature of interpersonal relationships through the establishment or dissolution of connections between individuals, OrNet creates graphs that capture the spatio-temporal relationships of organellar structures via a similar edge management process. Graphs are constructed by fitting gaussian mixture models to every frame in a video; the final means become the vertices, while a divergenece metric is applied to every combination pair of mixture components to create the edges. Once graphs are created for each frame, spectral decompostion can be utilized to track the leading eigenvalues to understand the time-points and frame regions where the organellar structures are demonstrating significant changes.      
+
 **Inputs:**
 
 - A single time-series video where the cells are fluorescently tagged to aid in the detection of sub-cellular organisms. (Note: We used a red fluorescent protein, DsRed2-Mito-7, in our experiments.)  
