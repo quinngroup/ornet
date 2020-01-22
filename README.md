@@ -126,7 +126,10 @@ Included in the *samples* directory are two types of fluorescent microscopy vide
 python -m ornet -i samples/mdivi/ -m samples/mdivi/ -c 20000 -d 100 -o ~/Desktop
 ```
 To demonstrate the usage of the constrain count option ("-c") we supplied as an argument the value "20,000", so only the first 20,000 frames are utilized. Likewise, we demonstrated the downsample option by supplying the value "100", which produces a new video and segmentation mask array comprised of every 100th frame from the video and masks. 
-  
+
+<img src="img/console_output.png" width="1000">
+
+A console output similar to the one above is expected for a successful run of OrNet. (Note: Cell tracking and GMM computations generally take the longest amount of time. If any progress bar appears to have stopped, please be patient while OrNet finishes that task.)
 
 ## Community Guidelines
 ### Requests or Questions
@@ -154,4 +157,3 @@ If you are using OrNet in a scientific paper, please see the following publicati
 [Dynamic Social Network Modeling of Diffuse Subcellular Morphologies](https://conference.scipy.org/proceedings/scipy2018/Andrew_Durden.html)
 
 [Modelling Diffuse Subcellular Protein Structures as Dynamic Social Networks](https://arxiv.org/abs/1904.12960)
-
