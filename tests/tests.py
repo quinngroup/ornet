@@ -5,7 +5,6 @@ import unittest
 import test_pipeline
 
 if __name__ == '__main__':
-    os.environ['IMAGEIO_FFMPEG_EXE'] = 'ffmpeg'
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
     suite.addTests([

@@ -38,12 +38,16 @@ def parse_cli(args):
                         help='Output directory to save files.')
     parser.add_argument('-c', '--count', type=int, default=-1,
                         help='First N frames of video to use. Default is all.')
+    parser.add_argument('-d', '--downsample', type=int, default=1,
+                        help='The number of frames to skip when performing'
+                              + 'downsampling.')
     return vars(parser.parse_args(args))
 
 
 def main(system_args):
     args = parse_cli(system_args[1:])
-    pipeline.run(args['input'], args['masks'], args['output'], args['count'])
+    pipeline.run(args['input'], args['masks'], args['output'], args['count'], 
+                 args['downsample'])
 
 if __name__ == '__main__':
     main(sys.argv)

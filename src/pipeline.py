@@ -172,7 +172,7 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
     '''
     masks = np.load(masks_path)
     masks_downsampled = [frame for i, frame in enumerate(masks) if
-                         i % 100 == 0]
+                         i % frame_skip == 0]
     np.save(os.path.join(downsampled_path, vid_name + '.npy'),
             masks_downsampled)
 
@@ -300,7 +300,8 @@ def compute_distances(intermediates_path, output_path):
 
     progress_bar.close()
 
-def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
+def run(input_path, initial_masks_dir, output_path, constrain_count=-1, 
+        downsample=1):
     '''
     Runs the entire ornet pipeline from start to finish for any video(s)
     found at the input path location.
@@ -317,6 +318,9 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
         Path to the output directory.
     constrain_count: int
         The first N number of frames of the video to use.
+    downsample: int
+        The number of frames to skip when performing
+        downsampling.
 
     Returns
     ----------
@@ -368,7 +372,7 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1):
         median_normalize(vid_name, full_video, normalized_path)
         downsample_vid(vid_name,
                        os.path.join(normalized_path, vid_name + '.avi'),
-                       masks_path, downsampled_path, 100)
+                       masks_path, downsampled_path, downsample)
         generate_single_vids(os.path.join(downsampled_path, vid_name + '.avi'),
                              masks_path, tmp_path)
         single_vids = os.listdir(tmp_path)

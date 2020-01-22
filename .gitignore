@@ -1,8 +1,11 @@
 __pycache__
+build
+dist
 Makefile
 htmlcov
 .coverage
 *.uxf
+*.egg-info
 /venv
 **/.idea
 **.pyc
