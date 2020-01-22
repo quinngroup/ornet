@@ -29,7 +29,7 @@ In the event that some of the packages are not installed properly,
 please refer to the dependencies section and manually install all that are listed.
 
 ## Testing
-Inside of the "tests" sub-directory, run the following command:
+Inside of the *tests* sub-directory, run the following command:
 
 ```
 python tests.py
@@ -118,9 +118,19 @@ from ornet import pipeline as pipeline
 pipeline.run(input_path, mask_path, output_path)
 ```
 
+## Examples
+
+Included in the *samples* directory are two types of fluorescent microscopy videos, llo and mdivi, that we utilized in our experiments to model mitochondria. LLO refers to the pore-forming toxin listeriolysin O, while mdivi refers to mitochondria division inhibitor-1. These proteins were introduced to cause fragmentation and hyperfusion, respectively. Below is a typical usage of OrNet to generate social network graphs of the mitochdodria.
+
+```
+python -m ornet -i samples/mdivi/ -m samples/mdivi/ -c 20000 -d 100 -o ~/Desktop
+```
+To demonstrate the usage of the constrain count option ("-c") we supplied as an argument the value "20,000", so only the first 20,000 frames are utilized. Likewise, we demonstrated the downsample option by supplying the value "100", which produces a new video and segmentation mask array comprised of every 100th frame from the video and masks. 
+  
+
 ## Community Guidelines
 ### Requests or Questions
-For any questions or change requests related to this project, please create an issue [here](https://github.com/quinngroup/ornet/issues). We ask that you use labels, such as "feature request" or "question", when creating an issue.
+For any questions or change requests related to this project, please create an issue [here](https://github.com/quinngroup/ornet/issues). We ask that you use labels, such as *feature*, *request*, or *question*, when creating an issue.
 
 ### Reporting Issues
 If you experinece any unexpected behavior with this software, please document it using this repository's [issues](https://github.com/quinngroup/ornet/issues) section. Please tag issues of this nature with the "unexpected behavior" label.
