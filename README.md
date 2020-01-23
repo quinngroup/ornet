@@ -118,9 +118,9 @@ from ornet import pipeline as pipeline
 pipeline.run(input_path, mask_path, output_path)
 ```
 
-## Examples
+## Example
 
-Included in the *samples* directory are two types of fluorescent microscopy videos, llo and mdivi, that we utilized in our experiments to model mitochondria. LLO refers to the pore-forming toxin listeriolysin O, while mdivi refers to mitochondria division inhibitor-1. These proteins were introduced to cause fragmentation and hyperfusion, respectively. Below is a typical usage of OrNet to generate social network graphs of the mitochdodria.
+Included in the *samples* directory are two types of fluorescent microscopy videos, llo and mdivi, that we utilized in our experiments to model mitochondria. LLO refers to the pore-forming toxin listeriolysin O, while mdivi refers to mitochondria division inhibitor-1. These proteins were introduced to cause fragmentation and hyperfusion, respectively. Below is a typical usage of OrNet to generate social network graphs of the mitochdodria, using the mdivi sample.
 
 ```
 python -m ornet -i samples/mdivi/ -m samples/mdivi/ -c 20000 -d 100 -o ~/Desktop
