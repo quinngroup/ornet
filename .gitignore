@@ -11,3 +11,4 @@ htmlcov
 **.pyc
 **.DS_Store
 eigenspectrum.py
+helper.py

@@ -2,17 +2,17 @@
 title: 'OrNet - a Python Toolkit to Model the Diffuse Structure of Organelles as Social Networks'
 tags:
   - Python
-  - cellular biology
-  - mitochondria
-  - computer vision
+  - Cellular Biology
+  - Organelles 
+  - Computer Vision
 authors:
   - name: Mojtaba Fazli
     orcid: 0000-0002-6082-2538
-    affiliation: 1
-  - name: Andrew Durden
-    affiliation: 1
+    affiliation: 1,*
   - name: Marcus Hill
     orcid: 0000-0002-9380-3181
+    affiliation: 1,*
+  - name: Andrew Durden
     affiliation: 1
   - name: Rachel Mattson
     affiliation: 1 
@@ -20,7 +20,7 @@ authors:
     affiliation: 2
   - name: Shannon Quinn
     orcid: 0000-0002-8916-6335
-    affiliation: 1, 3
+    affiliation: 1,3
 affiliations:
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 1
@@ -28,19 +28,19 @@ affiliations:
     index: 2 
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
+  - name: The two first authors made equal contributions.
+    index: *
 date: 19 November 2019
 bibliography: paper.bib
 ---
 
 # Summary
 
-Mitochondria can offer key insights into the health of a human cell. These organelles are strung out across a cell in diffuse, fluctuating webs; healthy structures can be altered by disease, cellular invaders, and other malfunctioning organelles [@Stavru:2016]. Previous work using mitochondrial distribution focuses on building a model of the cell’s morphology. For instance, both the Allen Cell Structure Segmenter [@Chen:2016] and CellOrganizer [@Murphy:2015] toolkits generate models for organelle structure, providing visual or probabilistic representations. Successful generation of static models has led to investigations in how structures develop over time, such as using mitochondrial distributions to map cells as they grow into a specialized form [@Ruan:2019].  This describes a single, albeit complex cellular process; many more processes could be described by mitochondrial distributions. 
+Fluorescent microscopy videos are vital for analyzing the morphological changes that subcellular protein structures undergo after exposure to external stimuli. Changes in organelle structures offer crucial insight into the manner in which cells respond to viral or bacterial infections, cellular invaders, or even the organelles themselves malfunctioning [@Stavru:2011]. Generally, modeling organellar structures involve manually inspecting each video then denoting time points and regions that demonstrate anomalous behavior. However, manual techniques are error prone and not scalable to high volumes of data. Thus, arises the need to find a methodology that generates quantitative models capable of accurately describing the data [@Eliceiri:2012]. Prior works have demonstrated successful generation of static models [@Murphy:2015; @Chen:2016; @Ruan:2019]. Such advancements have inspired us to propose a novel framework, OrNet, that models both the spatial and temporal morphology changes that organelles undergo as dynamic social networks.
 
-Our project builds on this idea [@Durden:2019], as we seek to convert physical mitochondrial networks into graph networks, then characterize distinct phenotypes. This tool kit is a prototype for future analysis kits. As it stands, we focus on characterizing two known mitochondrial conditions: drastic fragmentation and excessive fusion. Our resulting model seeks to pull out the key features that make up these processes from a data set, rather than immediately classify the set. This creates a staging ground for biologists and clinicians to use our pipeline to examine evolving mitochondrial distributions in more detail.
+OrNet is an open-source python package [@Python:1995] that is built-upon the libraries of Scikit-Learn [@scikit-learn:2011], NumPy [@Numpy:2006], SciPy [@2019arXiv190710121V], and Matplotlib [@Hunter:2007]. Our tool accepts as input microscopy videos of cells with fluorescently tagged organelles, and outputs quantitative descriptions of the morphological changes. The methodology consists of developing social networks that capture the spatio-temporal relationships of organellar structures via a dynamic edge management process. The graphs are constructed by fitting gaussian mixture models to every frame of an input video; the final means become the vertices, while a divergence metric is applied to every combination pair of mixture components to create the edges. Once graphs are created for each frame, spectral decomposition is utilized to track the leading eigenvalues to understand the time-points and frame regions where organellar structures are demonstrating significant changes. 
 
-OrNet, a python package [@Python:1995], relies heavily on algorithms from the Scikit-Learn tool kit [@scikit-learn:2011]. This in turn is built on NumPy [@Numpy:2006], SciPy [@2019arXiv190710121V], and Matplotlib [@Hunter:2007]. Our program takes videos of human cells with fluorescently tagged mitochondria and first extracts individual cells. With that base to work from, a model is fitted to video frames by calculating a mixture of probability masses (Gaussian Mixture Model). Essentially, this model identifies the center of the densest regions of mitochondrial protein, or peaks, and finds the probability that the surrounding protein belongs to a specific local distribution. The ultimate goal is to analyze the data as a graph, where the peaks in density are used as nodes, and probability metrics form weights and edges between nodes.
-
-The current version requires segmentation masks for each cell in a video, taken from the initial frame of each video, to seed the complete segmentation algorithm. Past masks were generated using the C based ITK-SNAP medical imaging tool [@Yoo:2002]. Running the current code requires executing the Pipeline.py script with arguments denoting the location of raw videos, masks, and desired path for output. Output takes the form of learned components from the mixture model and the calculated weights between nodes. 
+The viability of OrNet has been illustrated by [@Durden:2019] when the framework was utilized to model mitochondria found in HeLa cells that were exposed to various stimuli. We hope that our tool will be utilized by any project seeking to model subcellular organelles. 
 
 
 # Acknowledgements
