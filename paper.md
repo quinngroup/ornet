@@ -8,10 +8,10 @@ tags:
 authors:
   - name: Mojtaba Fazli
     orcid: 0000-0002-6082-2538
-    affiliation: 1,*
+    affiliation: "1,*"
   - name: Marcus Hill
     orcid: 0000-0002-9380-3181
-    affiliation: 1,*
+    affiliation: "1,*"
   - name: Andrew Durden
     affiliation: 1
   - name: Rachel Mattson
@@ -20,7 +20,7 @@ authors:
     affiliation: 2
   - name: Shannon Quinn
     orcid: 0000-0002-8916-6335
-    affiliation: 1,3
+    affiliation: "1,3"
 affiliations:
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 1
@@ -29,7 +29,6 @@ affiliations:
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
   - name: The two first authors made equal contributions.
-    index: *
 date: 19 November 2019
 bibliography: paper.bib
 ---

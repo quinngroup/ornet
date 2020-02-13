@@ -10,5 +10,5 @@ htmlcov
 **/.idea
 **.pyc
 **.DS_Store
-eigenspectrum.py
 helper.py
+eigenspectrum.py
