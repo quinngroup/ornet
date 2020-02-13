@@ -29,6 +29,7 @@ affiliations:
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
     index: 3
   - name: The two first authors made equal contributions.
+    index: "*"
 date: 19 November 2019
 bibliography: paper.bib
 ---
