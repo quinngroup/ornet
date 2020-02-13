@@ -61,34 +61,35 @@ def eigen_decomposition(matrix):
 
     return eigen_vals, eigen_vecs
 
-def eigenspectrum_plot(args):
+def eigenspectrum_plot(vids, outdir, max_vals=10):
     '''
-    Plots the eigenspectrum data across all video frames.
+    Plots the eigenspectrum data across all video frames,
+    and save the results.
 
     Parameters
     ----------
-    args: dict
-        Parsed cli arguments. Details the input video(s)
-        path(s) and output directory.
+    vids: list
+        Path(s) to the input video(s).
+    outdir: string
+        Path to the directory where the plots should be
+        saved.
 
     Returns
     ----------
     NoneType object
     '''
-
-    progress_bar = tqdm(total=len(args['input']))
-    for vid in args['input']:
+    progress_bar = tqdm(total=len(vids))
+    for vid in vids:
         frames = np.load(vid)
+        vid_name = os.path.split(vid)[-1].split('.')[0]
         vid_eigenvals = []
         for graph_matrix in frames:
             eigen_vals, eigen_vecs = eigen_decomposition(graph_matrix)
-            vid_eigenvals.append(eigen_vals)
+            vid_eigenvals.append(eigen_vals[:max_vals])
 
-        vid_name = os.path.split(vid)[-1].split('.')[0]
-        vid_eigenvals = np.array(vid_eigenvals)
-        plt.plot(vid_eigenvals)
         plt.suptitle(vid_name)
-        plt.savefig(os.path.join(args['output'], vid_name))
+        plt.plot(vid_eigenvals)
+        plt.savefig(os.path.join(outdir, vid_name))
         progress_bar.update()
 
     progress_bar.close()
@@ -193,6 +194,9 @@ def parse_cli(cli_args):
 
     return args
 
-if __name__ == '__main__':
+def main():
     args = parse_cli(sys.argv[1:])
-    eigenspectrum_plot(args)
+    eigenspectrum_plot(args['input'], args['output'])
+
+if __name__ == '__main__':
+    main()
