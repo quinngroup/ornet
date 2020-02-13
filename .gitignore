@@ -10,3 +10,4 @@ htmlcov
 **/.idea
 **.pyc
 **.DS_Store
+helper.py
