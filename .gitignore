@@ -10,3 +10,4 @@ htmlcov
 **/.idea
 **.pyc
 **.DS_Store
+eigenspectrum.py
