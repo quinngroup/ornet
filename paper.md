@@ -15,19 +15,21 @@ authors:
   - name: Andrew Durden
     affiliation: 1
   - name: Rachel Mattson
-    affiliation: 1 
+    affiliation: 2 
   - name: Chakra Chennubhotla
-    affiliation: 2
+    affiliation: 3 
   - name: Shannon Quinn
     orcid: 0000-0002-8916-6335
-    affiliation: "1,3"
+    affiliation: "1,4"
 affiliations:
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 1
+  - name: Institute for Artificial Intelligence, University of Georgia, Athens, GA 30602 USA
+    index: 2
   - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
-    index: 2 
+    index: 3 
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
-    index: 3
+    index: 4 
   - name: The two first authors made equal contributions.
     index: "*"
 date: 19 November 2019
