@@ -29,7 +29,7 @@ affiliations:
   - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
     index: 3 
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
-    index:4 
+    index: 4 
   - name: The two first authors made equal contributions.
     index: "*"
 date: 19 November 2019
