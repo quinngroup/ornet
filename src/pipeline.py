@@ -22,8 +22,6 @@ from ornet.affinityfunc import get_all_aff_tables
 from ornet.extract_cells import extract_cells
 from ornet.median_normalization import median_normalize as normalize
 
-
-
 def constrain_vid(vid_path, out_path, constrain_count):
     '''
     Constrains the input video to specified number of frames, and write the
@@ -370,19 +368,23 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
                           os.path.join(initial_masks_dir, vid_name + '.vtk'),
                           out_path)
         median_normalize(vid_name, full_video, normalized_path)
-        downsample_vid(vid_name,
+        downsample_vid(vid_name, full_video,
+                       masks_path, downsampled_path, downsample)
+        downsample_vid(vid_name + '_gray',
                        os.path.join(normalized_path, vid_name + '.avi'),
                        masks_path, downsampled_path, downsample)
         generate_single_vids(os.path.join(downsampled_path, vid_name + '.avi'),
+                             masks_path, singles_path)
+        generate_single_vids(os.path.join(downsampled_path, vid_name + '_gray.avi'),
                              masks_path, tmp_path)
         single_vids = os.listdir(tmp_path)
 
         progress_bar = tqdm(total=len(single_vids))
         progress_bar.set_description('Converting to gray')
         for single in single_vids:
-            convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
-            shutil.move(os.path.join(tmp_path, single),
-                        os.path.join(singles_path, single))
+            convert_to_grayscale(os.path.join(tmp_path, single), tmp_path) #tmp_path
+            #shutil.move(os.path.join(tmp_path, single),
+            #            os.path.join(singles_path, single))
             progress_bar.update()
 
         progress_bar.close()
@@ -394,4 +396,4 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
         shutil.rmtree(normalized_path)
         shutil.rmtree(downsampled_path)
         shutil.rmtree(tmp_path)
-        print()
+        print() #New line for output formatting
