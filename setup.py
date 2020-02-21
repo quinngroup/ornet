@@ -4,8 +4,12 @@ import setuptools
 setuptools.setup(
 	name='ornet',
 	version='0.1',
-	packages=['ornet', 'ornet.gmm'],
-	package_dir={'ornet':'src', 'ornet.gmm':'src/gmm'},
+	packages=['ornet', 'ornet.gmm', 'ornet.analysis'],
+	package_dir={
+        'ornet':'src', 
+        'ornet.gmm':'src/gmm', 
+        'ornet.analysis':'src/analysis'
+    },
 	install_requires=[
 		'itk',
 		'numpy',
