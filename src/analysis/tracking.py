@@ -18,7 +18,8 @@ import matplotlib.pyplot as plt
 
 from .util import spectral_decomposition, sort_eigens
 
-def regions_of_interest(distances, intermediates, videos, outdir, std_count=3):
+def regions_of_interest(distances, intermediates, videos, outdir, fps=None, 
+                        std_count=3):
     '''
     Draws bounding boxes around frame regions demonstrating
     the highest amounts of variance.
@@ -48,9 +49,12 @@ def regions_of_interest(distances, intermediates, videos, outdir, std_count=3):
             video_name  = re.sub('_gray', '', filename)
             if video_name in vid_file_path:
                 reader = imageio.get_reader(vid_file_path)
-                fps = reader.get_meta_data()['fps']
+                if fps is None:
+                    fps = reader.get_meta_data()['fps']
+
                 size = reader.get_meta_data()['size']
                 vid = list(reader)
+
         
         graph_matrices = np.load(distance_file_path)
         for i, matrix in enumerate(graph_matrices):
@@ -121,6 +125,8 @@ def parse_cli(cli_args):
     parser.add_argument('-v', '--videos', required=True,
                         help='Single cell video (.avi) or a directory of' 
                               + ' videos.')
+    parser.add_argument('-f', '--fps', 
+                        help='Frames per second of the output video.')
     parser.add_argument('-o', '--output', 
                         default=os.getcwd(), 
                         help='Output directory.')
@@ -144,6 +150,9 @@ def parse_cli(cli_args):
         args['videos'] = [os.path.join(args['videos'], x) 
                          for x in os.listdir(args['videos'])]
 
+    if args['fps'] is not None:
+        args['fps'] = int(args['fps'])
+
     if not os.path.isdir(args['output']):
         sys.exit('Output is not a directory.')
 
@@ -152,7 +161,7 @@ def parse_cli(cli_args):
 def main():
     args = parse_cli(sys.argv[1:])
     regions_of_interest(args['distances'], args['intermediates'], 
-                        args['videos'], args['output'])
+                        args['videos'], args['output'], fps=args['fps'])
     
 if __name__ == '__main__':
     main()
