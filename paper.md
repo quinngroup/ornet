@@ -16,20 +16,32 @@ authors:
     affiliation: 1
   - name: Rachel Mattson
     affiliation: 2 
+  - name: Allyson T. Loy
+    affiliation: 3
+  - name: Barbara Reaves
+    affiliation: 4
+  - name: Abigail Courtney
+    affiliation: 3
+  - name: Frederick D. Quinn
+    affiliation: 4
   - name: Chakra Chennubhotla
-    affiliation: 3 
+    affiliation: 5
   - name: Shannon Quinn
     orcid: 0000-0002-8916-6335
-    affiliation: "1,4"
+    affiliation: "1,6"
 affiliations:
   - name: Department of Computer Science, University of Georgia, Athens, GA 30602 USA
     index: 1
   - name: Institute for Artificial Intelligence, University of Georgia, Athens, GA 30602 USA
     index: 2
+  - name:  Department of Microbiology, University of Georgia, Athens, GA 30602 USA
+    index: 3
+  - name: Department of Infectious Diseases, University of Georgia, Athens, GA 30602 USA
+    index: 4
   - name: Department of Computational and Systems Biology, University of Pittsburgh, Pittsburgh, PA 15232 USA
-    index: 3 
+    index: 5
   - name: Department of Cellular Biology, University of Georgia, Athens, GA 30602 USA
-    index: 4 
+    index: 6  
   - name: The two first authors made equal contributions.
     index: "*"
 date: 19 November 2019
@@ -46,10 +58,9 @@ The viability of OrNet has been illustrated by [@Durden:2019] when the framework
 
 
 # Acknowledgements
-
-Thanks to Allyson T. Loy, Barbara Reaves, Abigail Courtney, and Frederick D. Quinn for contributions to the associated project.
-
 The project that yielded this software was supported in part by a grant from the National Science Foundation (#1458766).
+
+We gratefully acknowledge the support of NVIDIA Corporation with the donation of the Titan X Pascal GPU used for this research.
 
 # References
 
