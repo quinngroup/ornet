@@ -4,7 +4,6 @@ The pipeline consists of cell segmentation, graph vertex construction
 via Gaussian mixture model means, edge construction via divergence 
 functions, and eigen-decomposition of the matrix representation.
 '''
-# Author: Marcus Hill
 
 import os
 import re

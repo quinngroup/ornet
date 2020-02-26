@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.linalg import inv, det
 
-
 def multivariate_kl(m1, s1, m2, s2):
     """
     Multivariate KL-divergence measure for high-dimensional gaussians. For

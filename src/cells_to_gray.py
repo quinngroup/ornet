@@ -2,7 +2,6 @@
 This script converts the cell videos into grayscale frames saved in
 ".npy" files.
 '''
-# Author: Marcus Hill
 
 import os
 import argparse
