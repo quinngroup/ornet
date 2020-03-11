@@ -1,7 +1,6 @@
 '''
 Tracks regions of interest in the single cell videos.
 '''
-#Author: Marcus Hill
 
 import os
 import re

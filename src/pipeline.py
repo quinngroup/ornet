@@ -381,9 +381,9 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
         progress_bar = tqdm(total=len(single_vids))
         progress_bar.set_description('Converting to gray')
         for single in single_vids:
-            convert_to_grayscale(os.path.join(tmp_path, single), tmp_path) #tmp_path
-            #shutil.move(os.path.join(tmp_path, single),
-            #            os.path.join(singles_path, single))
+            convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
+            shutil.move(os.path.join(tmp_path, single),
+                        os.path.join(singles_path, single))
             progress_bar.update()
 
         progress_bar.close()
