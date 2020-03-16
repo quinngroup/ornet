@@ -2,7 +2,10 @@
 A utility module to assist in OrNet analysis operations.
 '''
 
+import os
+
 import numpy as np
+from tqdm import tqdm
 from scipy.sparse import csgraph
 
 def compute_similarity(matrix, beta=5):
@@ -21,15 +24,6 @@ def compute_similarity(matrix, beta=5):
         similarity matrix of the input.
     '''
     return np.exp((-beta * matrix) / np.std(matrix))
-
-def sort_eigens(eigen_vals, eigen_vecs):
-    '''
-    '''
-    sorted_indices = np.argsort(eigen_vals)
-    eigen_vals = eigen_vals[sorted_indices]
-    eigen_vecs = eigen_vecs[:, sorted_indices]
-
-    return eigen_vals, eigen_vecs, sorted_indices
 
 def spectral_decomposition(matrix):
     '''
@@ -55,3 +49,63 @@ def spectral_decomposition(matrix):
     laplacian = csgraph.laplacian(affinity, normed=True)
 
     return np.linalg.eig(laplacian)
+
+def sort_eigens(eigen_vals, eigen_vecs):
+    '''
+    Sorts the eigenvalues vector and rearranges the columns
+    of the eigeavalue matrix to correspond with the sorted
+    eigenvalues.
+
+    Parameters
+    ----------
+    eigen_vals: vector
+        Eigenvalues vector to be sorted.
+    eigen_vecs: matrix 
+        Eigenvectors to be rearranged.
+
+    Returns
+    ---------
+    sorted_eigen_vals: vector
+        Sorted eigen_vals.
+    sorted_eigen_vecs: matrix
+        Sorted eigen_vecs.
+    sorted_indices: list
+        The sorted order of indices of the original
+        eigen_vals vector.
+    '''
+    sorted_indices = np.argsort(eigen_vals)
+    eigen_vals = eigen_vals[sorted_indices]
+    eigen_vecs = eigen_vecs[:, sorted_indices]
+
+    return eigen_vals, eigen_vecs, sorted_indices
+
+def generate_eigens(input_dir, output_dir):
+    '''
+    Computes the eigenvalues and eigenvectors of
+    distance matrices.
+
+    Parameters
+    ---------
+    input_dir: string
+        Path to the distance matrices. (.npy)
+    ouput_dir: string
+        Path to save the resulting eigen information.
+
+    Returns
+    -------
+    NoneType object
+    '''
+
+    for filename in os.listdir(input_dir):
+        print(filename)
+        vid_title = filename.split('.')[0]
+        vid = np.load(os.path.join(input_dir, filename))
+        eigen_vals = []
+        eigen_vecs = []
+        for frame in tqdm(vid):
+            eigen_val, eigen_vec = spectral_decomposition(frame)
+            eigen_vals.append(eigen_val)
+            eigen_vecs.append(eigen_vec)
+
+        np.savez(os.path.join(output_dir, vid_title + '.npz'),
+                 eigen_vals=eigen_vals, eigen_vecs=eigen_vecs)
