@@ -83,11 +83,6 @@ def generate_frequency_dataset(eigen_dir_path, outfile_path,
                     magnitude = magnitude[:first_half]
                     magnitude_sum += magnitude
 
-                    #Write to CSV
-                    magnitude_list = list(magnitude_sum)
-                    magnitude_list.append(label)
-                    writer.writerow(magnitude_list)
-
                     #(Optional) Save the eigenvalue frequency plots
                     if plot_dir != None:
                         plot_title = file_name + '_leading_eigenval_' + str(i)
@@ -96,6 +91,11 @@ def generate_frequency_dataset(eigen_dir_path, outfile_path,
                         plt.bar(freqs, magnitude, width=1.5)
                         plt.savefig(os.path.join(plot_path, plot_title + '.png'))
                         plt.close()
+
+                #Write to CSV
+                magnitude_list = list(magnitude_sum)
+                magnitude_list.append(label)
+                writer.writerow(magnitude_list)
 
 def parse_cli(args):
     '''
@@ -134,30 +134,30 @@ def main():
     args = parse_cli(sys.argv[1:])
     if args['plot_dir'] and args['leading'] != None:
         generate_frequency_dataset(
-            args['input'], 
-            args['output'], 
+            args['input_path'], 
+            args['outfile'], 
             args['label'],
             args['plot_dir'],
-            args['leading']
+            int(args['leading'])
         )
     elif args['plot_dir'] != None:
         generate_frequency_dataset(
-            args['input'], 
-            args['output'], 
+            args['input_path'], 
+            args['outfile'], 
             args['label'],
             plot_dir=args['plot_dir'],
         )
     elif args['leading'] != None:
         generate_frequency_dataset(
-            args['input'], 
-            args['output'], 
+            args['input_path'], 
+            args['outfile'], 
             args['label'],
-            k=args['leading']
+            k=int(args['leading'])
         )
     else:
         generate_frequency_dataset(
-            args['input'], 
-            args['output'], 
+            args['input_path'], 
+            args['outfile'], 
             args['label']
         )
 
