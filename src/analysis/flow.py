@@ -138,7 +138,7 @@ def parse_cli(args):
     parser.add_argument('-e', '--eigens', required=True,
                         help='Path to eigen file (.npz).')
     parser.add_argument('-v', '--video', required=True,
-                        help='Path to cell video (.avi).')
+                        help='Path to grayscale cell video (.avi).')
     parser.add_argument('-o', '--outdir', default=os.getcwd(),
                         help='Path to output directory.')
     return vars(parser.parse_args(args))
@@ -146,7 +146,7 @@ def parse_cli(args):
 def main():
     args = parse_cli(sys.argv[1:])
     region_flow(args['intermediates'], args['eigens'],
-                args['video'], args['outdir']) #cmap='jet'
+                args['video'], args['outdir'], cmap='Blues') #cmap='jet'
 
 if __name__ == '__main__':
     main()

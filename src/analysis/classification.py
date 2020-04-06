@@ -89,7 +89,7 @@ def generate_frequency_dataset(eigen_dir_path, outfile_path,
                         plt.figure()
                         plt.title(plot_title)
                         plt.bar(freqs, magnitude, width=1.5)
-                        plt.savefig(os.path.join(plot_path, plot_title + '.png'))
+                        plt.savefig(os.path.join(plot_dir, plot_title + '.png'))
                         plt.close()
 
                 #Write to CSV

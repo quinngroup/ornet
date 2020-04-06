@@ -1,5 +1,5 @@
 '''
-Tracks regions of interest in the single cell videos.
+Bounding box tracks regions of interest in the single cell videos.
 '''
 
 import os

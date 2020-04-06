@@ -8,10 +8,11 @@ import sys
 import argparse
 
 import numpy as np
+import seaborn as sns #Add dependencies to requirements.txt
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from .util import sort_eigens, spectral_decomposition
+from ornet.analysis.util import sort_eigens, spectral_decomposition
 
 def eigenspectrum_plot(vids, outdir, max_vals=10):
     '''
@@ -30,6 +31,8 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
     ----------
     NoneType object
     '''
+
+    sns.set()
     progress_bar = tqdm(total=len(vids))
     for vid in vids:
         frames = np.load(vid)
@@ -41,7 +44,10 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
             vid_eigenvals.append(eigen_vals[:max_vals])
 
         plt.suptitle(vid_name)
-        plt.plot(vid_eigenvals)
+        ax = plt.subplot(111)
+        ax.plot(vid_eigenvals)
+        ax.set_xlabel('Frame')
+        ax.set_ylabel('Magnitude')
         plt.savefig(os.path.join(outdir, vid_name))
         progress_bar.update()
 

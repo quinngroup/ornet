@@ -54,7 +54,7 @@ def sort_eigens(eigen_vals, eigen_vecs):
     '''
     Sorts the eigenvalues vector and rearranges the columns
     of the eigeavalue matrix to correspond with the sorted
-    eigenvalues.
+    eigenvalues. Sorted in descending order.
 
     Parameters
     ----------
@@ -73,11 +73,12 @@ def sort_eigens(eigen_vals, eigen_vecs):
         The sorted order of indices of the original
         eigen_vals vector.
     '''
-    sorted_indices = np.argsort(eigen_vals)
-    eigen_vals = eigen_vals[sorted_indices]
-    eigen_vecs = eigen_vecs[:, sorted_indices]
+    ascending_sorted_indices = np.argsort(eigen_vals)
+    descending_sorted_indices = np.flip(ascending_sorted_indices)
+    eigen_vals = eigen_vals[descending_sorted_indices]
+    eigen_vecs = eigen_vecs[:, descending_sorted_indices]
 
-    return eigen_vals, eigen_vecs, sorted_indices
+    return eigen_vals, eigen_vecs, descending_sorted_indices
 
 def generate_eigens(input_dir, output_dir):
     '''
