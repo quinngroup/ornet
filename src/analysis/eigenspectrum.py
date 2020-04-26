@@ -49,9 +49,10 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
             plot_eigenvals.append(current_vals[:max_vals])
 
         #Save Plots
-        plt.suptitle(vid_name)
-        ax = plt.subplot(111)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
         ax.plot(plot_eigenvals)
+        ax.set_title(vid_name)
         ax.set_xlabel('Frame')
         ax.set_ylabel('Magnitude')
         plt.savefig(os.path.join(plot_dir_path, vid_name))
