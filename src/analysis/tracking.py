@@ -1,5 +1,12 @@
 '''
 Bounding box tracks regions of interest in the single cell videos.
+
+Notes:
+    - Eigenvals do not have a 1:1 correspondence with components,
+      making the tracking videos incorrect.
+    - Eigen data is sorted if computed with ornet.analysis.util
+      module, so unexpected behavior is likely to occur with 
+      this code.
 '''
 
 import os

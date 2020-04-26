@@ -10,6 +10,7 @@ import argparse
 
 import numpy as np
 from tqdm import tqdm
+import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, fftfreq, ifft
 
@@ -64,17 +65,17 @@ def generate_frequency_dataset(eigen_dir_path, outfile_path,
                     sorted_eigen_vals[i] = current_eigen_vals
 
                 if k == None or k > sorted_eigen_vals.shape[1]:
-                    max_eigenvals = sorted_eigen_vals.shape[1]
-                else:
-                    max_eigenvals = k
+                    k = sorted_eigen_vals.shape[1]
 
                 sampling_rate = len(sorted_eigen_vals)
                 first_half = len(sorted_eigen_vals) // 2
                 magnitude_sum = np.zeros(first_half)
 
-                for i in range(max_eigenvals):
+                for i in range(k):
                     #Compute the frequencies and store the first half
-                    eigen_fft = fft(sorted_eigen_vals[:, i])
+                    adjusted_eigen_vals =  sorted_eigen_vals[:, i] \
+                                            - np.mean(sorted_eigen_vals[:, i])
+                    eigen_fft = fft(adjusted_eigen_vals)
                     freqs = fftfreq(len(sorted_eigen_vals)) * sampling_rate
                     freqs = freqs[:first_half] 
 
@@ -85,11 +86,15 @@ def generate_frequency_dataset(eigen_dir_path, outfile_path,
 
                     #(Optional) Save the eigenvalue frequency plots
                     if plot_dir != None:
+                        sns.set()
                         plot_title = file_name + '_leading_eigenval_' + str(i)
-                        plt.figure()
                         plt.title(plot_title)
-                        plt.bar(freqs, magnitude, width=1.5)
-                        plt.savefig(os.path.join(plot_dir, plot_title + '.png'))
+                        fig = plt.Figure()
+                        ax = fig.add_subplot(111)
+                        ax.bar(freqs, magnitude, width=1.5)
+                        ax.set_xlabel('Frequency')
+                        ax.set_ylabel('Magnitude')
+                        fig.savefig(os.path.join(plot_dir, plot_title + '.png'))
                         plt.close()
 
                 #Write to CSV

@@ -6,6 +6,7 @@ import os
 
 import numpy as np
 from tqdm import tqdm
+from scipy.linalg import eigh
 from scipy.sparse import csgraph
 
 def compute_similarity(matrix, beta=5):
@@ -47,8 +48,7 @@ def spectral_decomposition(matrix):
 
     affinity = compute_similarity(matrix)
     laplacian = csgraph.laplacian(affinity, normed=True)
-
-    return np.linalg.eig(laplacian)
+    return eigh(laplacian)
 
 def sort_eigens(eigen_vals, eigen_vecs):
     '''

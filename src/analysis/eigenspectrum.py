@@ -1,6 +1,6 @@
 '''
 Plots the eigenspectrum of the graphs that correspond with
-every video frame.
+every video frame, and saves the "eigendata".
 '''
 
 import os
@@ -12,7 +12,8 @@ import seaborn as sns #Add dependencies to requirements.txt
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from ornet.analysis.util import sort_eigens, spectral_decomposition
+from ornet.analysis.util import sort_eigens, \
+    spectral_decomposition, generate_eigens
 
 def eigenspectrum_plot(vids, outdir, max_vals=10):
     '''
@@ -34,22 +35,30 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
 
     sns.set()
     progress_bar = tqdm(total=len(vids))
+    input_dir = os.path.split(vids[0])[0]
+    eigendata_dir_path = os.path.join(outdir, 'Eigendata')
+    plot_dir_path = os.path.join(outdir, 'Plots')
+    os.makedirs(eigendata_dir_path)
+    os.makedirs(plot_dir_path)
     for vid in vids:
         frames = np.load(vid)
         vid_name = os.path.split(vid)[-1].split('.')[0]
-        vid_eigenvals = []
+        plot_eigenvals = []
         for graph_matrix in frames:
-            eigen_vals, eigen_vecs = spectral_decomposition(graph_matrix)
-            eigen_vals, eigen_vecs, ind = sort_eigens(eigen_vals, eigen_vecs)
-            vid_eigenvals.append(eigen_vals[:max_vals])
+            current_vals, current_vecs = spectral_decomposition(graph_matrix)
+            plot_eigenvals.append(current_vals[:max_vals])
 
+        #Save Plots
         plt.suptitle(vid_name)
         ax = plt.subplot(111)
-        ax.plot(vid_eigenvals)
+        ax.plot(plot_eigenvals)
         ax.set_xlabel('Frame')
         ax.set_ylabel('Magnitude')
-        plt.savefig(os.path.join(outdir, vid_name))
+        plt.savefig(os.path.join(plot_dir_path, vid_name))
         progress_bar.update()
+
+    #Save Eigendata
+    generate_eigens(input_dir, eigendata_dir_path)
 
     progress_bar.close()
 
@@ -68,15 +77,16 @@ def parse_cli(cli_args):
         Key value option-argument pairs.
     '''
     parser = argparse.ArgumentParser(
-        description='This script takes a numpy array, or a directory of arrays'
-                    + ' , of cell distance files and can generate either a'
-                    + ' dataset, or output the eigenspectrum.')
+        description='Generates eigenspectrum plots from cell distance '
+                    + 'files (.npy), and saves the plots and "eigendata".'
+                    + ' The eigendata is saved in a numpy zip with the'
+                    + ' keywords "eigen_vals" and "eigen_vecs".'
+    )
     parser.add_argument('-i', '--input', required=True, 
-                        help='Weighted graph adjacency matrix or a directory'
-                             + '  of matrices.')
+                        help='Distance file or files (.npy).')
     parser.add_argument('-o', '--output', 
                         default=os.getcwd(), 
-                        help='Output directory.')
+                        help='Directory to save the plots.')
     args = vars(parser.parse_args(cli_args))
 
     if os.path.isfile(args['input']):
