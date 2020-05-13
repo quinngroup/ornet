@@ -48,7 +48,9 @@ def spectral_decomposition(matrix):
 
     affinity = compute_similarity(matrix)
     laplacian = csgraph.laplacian(affinity, normed=True)
-    return eigh(laplacian)
+    eigen_vals, eigen_vecs = eigh(laplacian)
+    eigen_vals, eigen_vecs = np.flip(eigen_vals), np.flip(eigen_vecs)
+    return eigen_vals, eigen_vecs
 
 def sort_eigens(eigen_vals, eigen_vecs):
     '''

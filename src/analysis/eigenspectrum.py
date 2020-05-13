@@ -38,8 +38,8 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
     input_dir = os.path.split(vids[0])[0]
     eigendata_dir_path = os.path.join(outdir, 'Eigendata')
     plot_dir_path = os.path.join(outdir, 'Plots')
-    os.makedirs(eigendata_dir_path)
-    os.makedirs(plot_dir_path)
+    os.makedirs(eigendata_dir_path, exist_ok=True)
+    os.makedirs(plot_dir_path, exist_ok=True)
     for vid in vids:
         frames = np.load(vid)
         vid_name = os.path.split(vid)[-1].split('.')[0]
@@ -56,6 +56,7 @@ def eigenspectrum_plot(vids, outdir, max_vals=10):
         ax.set_xlabel('Frame')
         ax.set_ylabel('Magnitude')
         plt.savefig(os.path.join(plot_dir_path, vid_name))
+        plt.close()
         progress_bar.update()
 
     #Save Eigendata
