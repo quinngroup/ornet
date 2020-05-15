@@ -26,9 +26,13 @@ def main():
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
     sns.set()
     plot_in_3D = False
+    colors={}
+    colors[0], colors[1], colors[2] = 'r', 'g', 'b'
+    '''
     colors = {}
     for i in range(k):
         colors[i] = np.random.rand(3)
+    '''
 
     for i in tqdm(range(eigen_vecs.shape[0])): 
         kmeans = KMeans(n_clusters=k).fit(eigen_vecs[i])
@@ -41,19 +45,21 @@ def main():
             ax.set_zlabel('Third Dimension')
         else:
             ax = fig.add_subplot(111)
-            #ax.scatter(eigen_vecs[i,:,0], eigen_vecs[i,:,1], c=label_colors)
-            ax.scatter(eigen_vecs[i,:,-2], eigen_vecs[i,:,-3], c=label_colors)
+            ax.scatter(eigen_vecs[i,:,0], eigen_vecs[i,:,1], c=label_colors)
+            #ax.scatter(eigen_vecs[i,:,-2], eigen_vecs[i,:,-3], c=label_colors)
 
         ax.set_title('DsRed2-HeLa_3_1_LLO_1')
         ax.set_xlabel('First Dimension')
         ax.set_ylabel('Second Dimension')
+        ax.set_xlim(left=-.65, right=.65)
+        ax.set_ylim(bottom=-.6, top=.6)
         for j in range(len(label_colors)):
             if plot_in_3D:
                 ax.text(eigen_vecs[i,j,0], eigen_vecs[i,j,1], 
                         eigen_vecs[i,j,2], str(j))
             else:
-                #ax.text(eigen_vecs[i,j,0], eigen_vecs[i,j,1], str(j))
-                ax.text(eigen_vecs[i,j,-2], eigen_vecs[i,j,-3], str(j))
+                ax.text(eigen_vecs[i,j,0], eigen_vecs[i,j,1], str(j))
+                #ax.text(eigen_vecs[i,j,-2], eigen_vecs[i,j,-3], str(j))
 
         plt.savefig(os.path.join(outdir_path, str(i)))
         #plt.show()

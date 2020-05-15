@@ -40,7 +40,7 @@ def parse_cli(args):
                         help='First N frames of video to use. Default is all.')
     parser.add_argument('-d', '--downsample', type=int, default=1,
                         help='The number of frames to skip when performing'
-                              + 'downsampling.')
+                              + ' downsampling.')
     return vars(parser.parse_args(args))
 
 
