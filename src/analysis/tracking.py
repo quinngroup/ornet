@@ -22,7 +22,7 @@ import numpy as np
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from .util import spectral_decomposition, sort_eigens
+#from .util import spectral_decomposition, sort_eigens
 
 def regions_of_interest(distances, intermediates, videos, outdir, fps=None, 
                         std_count=3):
@@ -127,7 +127,6 @@ def parse_cli(cli_args):
     parser.add_argument('-i', '--intermediates', required=True,
                         help='GMM intermediate file (.npz) or a directory of' 
                               + ' files.')
-
     parser.add_argument('-v', '--videos', required=True,
                         help='Single cell video (.avi) or a directory of' 
                               + ' videos.')
