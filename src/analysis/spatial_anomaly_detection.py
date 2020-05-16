@@ -4,10 +4,12 @@ anomalous behavior.
 '''
 
 import os
+import math
 
 import imageio
 import numpy as np
 from sklearn.cluster import KMeans
+from scipy.spatial.distance import euclidean
 
 def spectral_clustering(eigen_vecs, k=3):
     '''
@@ -17,6 +19,12 @@ def spectral_clustering(eigen_vecs, k=3):
     Parameters
     ----------
     eigen_vecs: NumPy array (NxMxM)
+        Eigenvector matrix. N represents the number of
+        frames in the corresponding video, M is the
+        number of mixture components.
+    k: int
+        Number of clusters for the spectral clustering
+        algorithm.
     '''
     
     labels = []
@@ -26,7 +34,54 @@ def spectral_clustering(eigen_vecs, k=3):
 
     return labels
 
-def draw_bounding_boxes(frames, means, covars, labels):
+def euclidean_distance(x, y):
+    '''
+    Computes the euclidean distance between two vectors.
+
+    Parameters
+    ----------
+    x,y: NumPy array (m,)
+        Eigenvector of length m, where m is the number
+        of Gaussian mixture components.
+
+    Returns
+    -------
+    distance: float
+        Euclidean distance between two vectors.
+    '''
+
+    return math.sqrt(np.sum((x - y)**2))
+
+def absolute_distance_traveled(eigen_vecs):
+    '''
+    Computes the absolute distance traveled
+    of each mixture component.
+
+    Parameters
+    ----------
+    eigen_vecs: NumPy array (NxMxM)
+        Eigenvector matrix. N represents the number of
+        frames in the corresponding video, M is the
+        number of mixture components.
+
+    Returns
+    -------
+    distances: NumPy array(m,)
+        Vector of distances of length m, where denotes
+        the number of mixture components.
+    '''
+
+    distances = np.zeros(eigen_vecs.shape[1], dtype=np.float)
+    for i in range(eigen_vecs.shape[0] - 1):
+        for j in range(eigen_vecs.shape[1]):
+            #distances[j] += euclidean_distance(eigen_vecs[i,j], 
+            #                                  eigen_vecs[i + 1,j])
+            distances[j] += euclidean(eigen_vecs[i,j], eigen_vecs[i + 1,j])
+
+    return distances
+
+
+def draw_bounding_boxes(frames, means, covars, eigen_vecs, k):
     '''
     Draws bounding boxes around the mixture component
     regions demonstrating the most variance. (?)
@@ -45,8 +100,13 @@ def draw_bounding_boxes(frames, means, covars, labels):
         components. N is the number of video frames,
         M is the number of mixture components, and 2x2
         denotes the covariance matrix.
-    labels: list
-        Cluster membership labels of the components.
+    eigen_vecs: NumPy array (NxMxM)
+        Eigenvector matrix. N represents the number of
+        frames in the corresponding video, M is the
+        number of mixture components.
+    k: int
+        Number of clusters for the spectral clustering
+        algorithm.
     '''
     
     '''
@@ -58,7 +118,10 @@ def draw_bounding_boxes(frames, means, covars, labels):
                 - Largest distances traveled
                 - Z-Score based, with a threshold of 2.
     '''
-    num_of_clusters = len(np.unique(labels))
+    #labels = spectral_clustering(eigen_vecs, k=k)
+    distances = absolute_distance_traveled(eigen_vecs)   
+    descending_distances_indices = np.flip(np.argsort(distances))
+    print(np.flip(np.argsort(distances)))
 
 def main():
     '''
@@ -78,7 +141,7 @@ def main():
         '/extrastorage/ornet/distances/Hellinger Distances/intermediates/DsRed2-HeLa_3_15_LLO1part1_1.npz'
     vid_path = \
         '/home/marcus/Desktop/Anomaly-Detection/outputs/singles/DsRed2-HeLa_3_15_LLO1part1_1.avi'
-    num_of_clusters = 3
+    k = 3
 
     eigen_data = np.load(eigen_data_path)
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
@@ -87,8 +150,7 @@ def main():
     with imageio.get_reader(vid_path) as reader:
         frames = list(reader)
 
-    labels = spectral_clustering(eigen_vecs, k=num_of_clusters)
-    #draw_bounding_boxes(frames, means, covars, labels)
+    draw_bounding_boxes(frames, means, covars, eigen_vecs, k)
 
 if __name__ == '__main__':
     main()

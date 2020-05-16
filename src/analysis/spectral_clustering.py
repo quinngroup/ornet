@@ -21,7 +21,8 @@ def main():
     #outdir_path = '/home/marcus/Desktop/Spectral-Clustering-Plots/'
     outdir_path = '/home/marcus/Desktop/Close/'
     eigen_data = np.load(
-        '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_1_LLO_1.npz'
+        #'/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_1_LLO_1.npz'
+        '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'
     )
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
     sns.set()
