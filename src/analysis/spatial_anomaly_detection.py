@@ -8,6 +8,7 @@ import math
 
 import imageio
 import numpy as np
+from tqdm import tqdm
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import euclidean
 
@@ -25,6 +26,14 @@ def spectral_clustering(eigen_vecs, k=3):
     k: int
         Number of clusters for the spectral clustering
         algorithm.
+
+    Returns
+    -------
+    labels: list (NxM)
+        Cluster membership labels of the mixture
+        components. N represents the number of 
+        frames, and M is the number of mixture
+        components.
     '''
     
     labels = []
@@ -33,24 +42,6 @@ def spectral_clustering(eigen_vecs, k=3):
         labels.append(kmeans.labels_)
 
     return labels
-
-def euclidean_distance(x, y):
-    '''
-    Computes the euclidean distance between two vectors.
-
-    Parameters
-    ----------
-    x,y: NumPy array (m,)
-        Eigenvector of length m, where m is the number
-        of Gaussian mixture components.
-
-    Returns
-    -------
-    distance: float
-        Euclidean distance between two vectors.
-    '''
-
-    return math.sqrt(np.sum((x - y)**2))
 
 def absolute_distance_traveled(eigen_vecs):
     '''
@@ -74,14 +65,12 @@ def absolute_distance_traveled(eigen_vecs):
     distances = np.zeros(eigen_vecs.shape[1], dtype=np.float)
     for i in range(eigen_vecs.shape[0] - 1):
         for j in range(eigen_vecs.shape[1]):
-            #distances[j] += euclidean_distance(eigen_vecs[i,j], 
-            #                                  eigen_vecs[i + 1,j])
             distances[j] += euclidean(eigen_vecs[i,j], eigen_vecs[i + 1,j])
 
     return distances
 
 
-def draw_bounding_boxes(frames, means, covars, eigen_vecs, k):
+def draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps, size, std_threshold=3):
     '''
     Draws bounding boxes around the mixture component
     regions demonstrating the most variance. (?)
@@ -118,10 +107,42 @@ def draw_bounding_boxes(frames, means, covars, eigen_vecs, k):
                 - Largest distances traveled
                 - Z-Score based, with a threshold of 2.
     '''
-    #labels = spectral_clustering(eigen_vecs, k=k)
+    out_vid_path = '/home/marcus/Desktop/bounding_box_example.mp4'
+    labels = spectral_clustering(eigen_vecs, k=k)
+    box_colors = {}
+    for i in range(k):
+        box_colors[i] = np.random.randint(256, size=(3,))
+    
     distances = absolute_distance_traveled(eigen_vecs)   
     descending_distances_indices = np.flip(np.argsort(distances))
-    print(np.flip(np.argsort(distances)))
+
+    with imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
+        for i, frame in enumerate(tqdm(frames)):
+            for j in descending_distances_indices[:1]:
+                x_diff = std_threshold * math.sqrt(covars[i][j][0][0])
+                y_diff = std_threshold * math.sqrt(covars[i][j][1][1])
+                x_bounds = [int(means[i][j][0] - x_diff), int(means[i][j][0] + x_diff)]
+                y_bounds = [int(means[i][j][1] - y_diff), int(means[i][j][1] + y_diff)]
+
+                if x_bounds[0] < 0:
+                    x_bounds[0] = 0
+
+                if x_bounds[0] >= size[0]:
+                    x_bounds[0] = size[0] - 1;
+
+                if y_bounds[0] < 0:
+                    y_bounds[0] = 0
+
+                if y_bounds[1] >= size[1]:
+                    y_bounds[1] = size[1] - 1;
+                
+                color = box_colors[labels[i][j]]
+                frames[i][x_bounds[0]:x_bounds[1], y_bounds[0], :] = color
+                frames[i][x_bounds[0]:x_bounds[1], y_bounds[1], :] = color
+                frames[i][x_bounds[0], y_bounds[0]:y_bounds[1], :] = color
+                frames[i][x_bounds[1], y_bounds[0]:y_bounds[1], :] = color
+            
+            writer.append_data(frames[i])
 
 def main():
     '''
@@ -149,8 +170,10 @@ def main():
     means, covars = inter['means'], inter['covars']
     with imageio.get_reader(vid_path) as reader:
         frames = list(reader)
+        fps = reader.get_meta_data()['fps']
+        size = reader.get_meta_data()['size']
 
-    draw_bounding_boxes(frames, means, covars, eigen_vecs, k)
+    draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps=fps, size=size)
 
 if __name__ == '__main__':
     main()
