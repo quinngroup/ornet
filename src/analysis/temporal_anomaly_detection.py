@@ -18,6 +18,9 @@ with respect to.
 '''
 
 import os
+import sys
+import argparse
+
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -44,7 +47,7 @@ def data_loader(eigen_data_path):
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
     return eigen_vals, eigen_vecs
 
-def plot(eigen_vals, z_scores, title):
+def plot(eigen_vals, z_scores, title, save_fig, outdir_path=None):
     '''
     Plots eigenvalue time-series data, and a
     corresponding z-score curve.
@@ -62,7 +65,13 @@ def plot(eigen_vals, z_scores, title):
     ax.plot(z_scores)
     ax.set_xlabel('Frame')
     ax.set_ylabel('Z-Score')
-    plt.show()
+    if save_fig:
+        file_name = os.path.join(outdir_path, title.split(' ')[0])
+        plt.savefig(file_name)
+    else:
+        plt.show()
+    
+    plt.close()
 
 def approach_one(eigen_vals, k=10, threshold=2):
     '''
@@ -99,7 +108,8 @@ def approach_one(eigen_vals, k=10, threshold=2):
             signals[i] = 0
     plot(eigen_vals[:,:k], signals, 'Raw Signal Plot')
 
-def approach_three(eigen_vals, k=10, window=20, threshold=2): #10, 2
+def approach_three(vid_name, eigen_vals, outdir_path, k=10, 
+                   window=20, threshold=2): #10, 2
     '''
     Compute z-scores using a sliding window.
     '''
@@ -132,17 +142,51 @@ def approach_three(eigen_vals, k=10, window=20, threshold=2): #10, 2
         if signal != 0:
             print(i)
 
-    plot(eigen_vals[:,:k], z_scores, 'Sliding Window Z-Score Plot')
-    plot(eigen_vals[:,:k], signals, 'Sliding Window Signals Plot')
+    title = vid_name + ' Signals Plot'
+    #plot(eigen_vals[:,:k], z_scores, 'Sliding Window Z-Score Plot')
+    plot(eigen_vals[:,:k], signals, title, True, outdir_path)
 
+
+def parse_cli(input_args):
+    '''
+    Parses the command line arguments.
+
+    Parameters
+    ----------
+    input_args: list
+        Arguments to be parsed.
+
+    Returns
+    -------
+    parsed_args: dict
+        Key value pairs of arguments.
+    '''
+    
+    parser = argparse.ArgumentParser(
+        description='Anomaly detection of of eigenvalue time-series data.'
+    )
+    parser.add_argument('-i', '--input', required=True, 
+                        help='Input directory of eigendata file (.npz).')
+    parser.add_argument('-o', '--outdir', default=os.getcwd(),
+                        help='Output directory for plots.')
+
+    return vars(parser.parse_args(input_args))
 
 def main():
+    '''
     eigen_data_path = \
         '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'
     eigen_vals, eigen_vecs = data_loader(eigen_data_path)
+    '''
+    
+    args =  parse_cli(sys.argv[1:])
+    for vid_path in os.listdir(args['input']):
+        vid_name = os.path.split(vid_path)[1].split('.')[0]
+        eigen_data_path = os.path.join(args['input'], vid_path)
+        eigen_vals, eigen_vecs = data_loader(eigen_data_path)   
+        approach_three(vid_name, eigen_vals, args['outdir'])
 
     #approach_one(eigen_vals)
-    approach_three(eigen_vals)
 
 if __name__ == '__main__':
     main()

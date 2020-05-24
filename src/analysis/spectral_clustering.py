@@ -19,7 +19,8 @@ def main():
 
     k = 3
     #outdir_path = '/home/marcus/Desktop/Spectral-Clustering-Plots/'
-    outdir_path = '/home/marcus/Desktop/Close/'
+    outdir_path = '/home/marcus/Desktop/Spectral-Clustering-Plots/'
+    os.makedirs(outdir_path, exist_ok=True)
     eigen_data = np.load(
         #'/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_1_LLO_1.npz'
         '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'
@@ -36,7 +37,7 @@ def main():
     '''
 
     for i in tqdm(range(eigen_vecs.shape[0])): 
-        kmeans = KMeans(n_clusters=k).fit(eigen_vecs[i])
+        kmeans = KMeans(n_clusters=k).fit(eigen_vecs[i, :, :k])
         label_colors = [colors[x] for x in kmeans.labels_]
         
         fig = plt.figure(figsize=(19.2, 9.60))
@@ -49,7 +50,8 @@ def main():
             ax.scatter(eigen_vecs[i,:,0], eigen_vecs[i,:,1], c=label_colors)
             #ax.scatter(eigen_vecs[i,:,-2], eigen_vecs[i,:,-3], c=label_colors)
 
-        ax.set_title('DsRed2-HeLa_3_1_LLO_1')
+        #ax.set_title('DsRed2-HeLa_3_1_LLO_1')
+        ax.set_title('DsRed2-HeLa_3_15_LLO1part1_1')
         ax.set_xlabel('First Dimension')
         ax.set_ylabel('Second Dimension')
         ax.set_xlim(left=-.65, right=.65)

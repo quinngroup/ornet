@@ -4,7 +4,9 @@ anomalous behavior.
 '''
 
 import os
+import sys
 import math
+import argparse
 
 import imageio
 import numpy as np
@@ -70,7 +72,8 @@ def absolute_distance_traveled(eigen_vecs):
     return distances
 
 
-def draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps, size, std_threshold=3):
+def draw_bounding_boxes(frames, means, covars, eigen_vecs, 
+                        k, fps, size, outdir_path, std_threshold=3):
     '''
     Draws bounding boxes around the mixture component
     regions demonstrating the most variance. (?)
@@ -96,18 +99,19 @@ def draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps, size, std_thr
     k: int
         Number of clusters for the spectral clustering
         algorithm.
+    fps: int
+        Frames per second of the video.
+    size: tuple (2,)
+        Width and height of the video.
+    outdir_path: string
+        Path to save the bounding box video.
+    std_threshold: float 
+        The number of standard deviations to use to compute
+        the spatial region of the bounding box. Default is
+        three.
     '''
-    
-    '''
-        - Randomly generate box colors.
-        - Draw bounding boxes for every component.
-            - Or most significant variance could be determined
-              by computing which components "travel" the most
-              in euclidean space.
-                - Largest distances traveled
-                - Z-Score based, with a threshold of 2.
-    '''
-    out_vid_path = '/home/marcus/Desktop/bounding_box_example.mp4'
+
+    out_vid_path = os.path.join(outdir_path, 'bounding_box_example.mp4')
     labels = spectral_clustering(eigen_vecs, k=k)
     box_colors = {}
     for i in range(k):
@@ -144,36 +148,61 @@ def draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps, size, std_thr
             
             writer.append_data(frames[i])
 
-def main():
+def parse_cli(args):
     '''
-        - Load in the eigendata.
-        - Load in intermediates data.
-        - Load in a video.
+    Parses the command line arguments.
 
-        - Cluster the eigendata.
-        - Use the intermediates to draw bounding boxes.
-            - Color cluster members the same box.
+    Parameters
+    ----------
+    input_args: list
+        Arguments to be parsed.
+
+    Returns
+    -------
+    parsed_args: dict
+        Key value pairs of arguments.
     '''
+
+    parser = argparse.ArgumentParser(
+        description='Indicates spatial regions demonstrating the relatively' + 
+                    ' high variance with bounding boxes.'
+    )
+    parser.add_argument('-i', '--intermediates', required=True,
+                         help='GMM intermediates file (.npz).')
+    parser.add_argument('-e', '--eigendata', required=True,
+                         help='Eigendata file (.npz).')
+    parser.add_argument('-v', '--video', required=True,
+                         help='Individual cell video path (.avi).')
+    parser.add_argument('-o', '--outdir', default=os.getcwd(),
+                         help='Output directory path.')
+
+    return vars(parser.parse_args(args))
+
+def main():
 
     
+    '''
     eigen_data_path = \
-    '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'   
+    #'/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'   
     inter_path = \
-        '/extrastorage/ornet/distances/Hellinger Distances/intermediates/DsRed2-HeLa_3_15_LLO1part1_1.npz'
+        #'/extrastorage/ornet/distances/Hellinger Distances/intermediates/DsRed2-HeLa_3_15_LLO1part1_1.npz'
     vid_path = \
-        '/home/marcus/Desktop/Anomaly-Detection/outputs/singles/DsRed2-HeLa_3_15_LLO1part1_1.avi'
+        #'/home/marcus/Desktop/Anomaly-Detection/outputs/singles/DsRed2-HeLa_3_15_LLO1part1_1.avi'
+    '''
+    
+    args = parse_cli(sys.argv[1:])
     k = 3
-
-    eigen_data = np.load(eigen_data_path)
+    eigen_data = np.load(args['eigendata'])
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
-    inter = np.load(inter_path)
+    inter = np.load(args['intermediates'])
     means, covars = inter['means'], inter['covars']
-    with imageio.get_reader(vid_path) as reader:
+    with imageio.get_reader(args['video']) as reader:
         frames = list(reader)
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
 
-    draw_bounding_boxes(frames, means, covars, eigen_vecs, k, fps=fps, size=size)
+    draw_bounding_boxes(frames, means, covars, eigen_vecs, 
+                        k, fps, size, args['outdir'])
 
 if __name__ == '__main__':
     main()
