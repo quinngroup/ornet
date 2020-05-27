@@ -115,10 +115,14 @@ def approach_three(vid_name, eigen_vals, outdir_path, k=10,
     '''
     eigen_vals_avgs = [np.mean(x) for x in eigen_vals]
     #eigen_vals_avgs = [np.mean(x[:k]) for x in eigen_vals]
+    #eigen_vals_avgs = [np.median(x) for x in eigen_vals]
+    #eigen_vals_avgs = [np.median(x[:k]) for x in eigen_vals]
+
     moving_avgs = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     moving_stds = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     z_scores = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     signals = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
+    #thresholds = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
 
     moving_avgs[:window] = 0
     moving_stds[:window] = 0
@@ -126,12 +130,22 @@ def approach_three(vid_name, eigen_vals, outdir_path, k=10,
     for i in range(window, moving_avgs.shape[0]):
         moving_avgs[i] = np.mean(eigen_vals_avgs[i - window:i])
         moving_stds[i] = np.std(eigen_vals_avgs[i - window:i])
+        #thresholds[i] = np.var(eigen_vals_avgs[i - window:i])
         z_scores[i] = (eigen_vals_avgs[i] - moving_avgs[i]) / moving_stds[i]
 
+    #threshold = np.var(eigen_vals_avgs)
     for i, score in enumerate(z_scores):
         if score > threshold:
             signals[i] = 1
         elif score < threshold * -1:
+            signals[i] = -1
+        else:
+            signals[i] = 0
+    '''
+    for i, score in enumerate(z_scores):
+        if score > thresholds[i]:
+            signals[i] = 1
+        elif score < thresholds[i] * -1:
             signals[i] = -1
         else:
             signals[i] = 0
@@ -141,6 +155,7 @@ def approach_three(vid_name, eigen_vals, outdir_path, k=10,
     for i, signal in enumerate(signals):
         if signal != 0:
             print(i)
+    '''
 
     title = vid_name + ' Signals Plot'
     #plot(eigen_vals[:,:k], z_scores, 'Sliding Window Z-Score Plot')

@@ -41,29 +41,29 @@ def constrain_vid(vid_path, out_path, constrain_count):
     ----------
     NoneType object
     '''
-    reader = imageio.get_reader(vid_path)
-    fps = reader.get_meta_data()['fps']
-    size = reader.get_meta_data()['size']
-    writer = cv2.VideoWriter(out_path,
-                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
-                             fps, size)
+
+    with imageio.get_reader(vid_path) as reader:
+        fps = reader.get_meta_data()['fps']
+        size = reader.get_meta_data()['size']
+        count = reader.count_frames()
+        frames = list(reader)
+
     if constrain_count == -1:
-        constrain_count = reader.count_frames()
+        constrain_count = count 
 
-    i = 0
-    progress_bar = tqdm(total=constrain_count)
-    progress_bar.set_description('Constraining video')
-    for frame in reader:
-        if i == constrain_count:
-            break
-        else:
-            writer.write(frame)
-            i += 1
-        progress_bar.update()
+    with imageio.get_writer(out_path, mode='I', fps=fps) as writer:
+        progress_bar = tqdm(total=constrain_count)
+        progress_bar.set_description('Constraining video')
+        i = 0
+        for frame in frames:
+            if i == constrain_count:
+                break
+            else:
+                writer.append_data(frame)
+                i += 1
+            progress_bar.update()
 
-    reader.close()
-    writer.release()
-    progress_bar.close()
+        progress_bar.close()
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
@@ -173,22 +173,23 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
     np.save(os.path.join(downsampled_path, vid_name + '.npy'),
             masks_downsampled)
 
-    reader = imageio.get_reader(vid_path)
-    fps = reader.get_meta_data()['fps']
-    size = reader.get_meta_data()['size']
-    writer = cv2.VideoWriter(os.path.join(downsampled_path, vid_name + '.avi'),
-                             cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'),
-                             fps, size)
-    progress_bar  = tqdm(total=reader.count_frames())
-    progress_bar.set_description('      Downsampling')
-    for i, frame in enumerate(reader):
-        if i % frame_skip == 0:
-            writer.write(frame)
-        progress_bar.update()
+    with imageio.get_reader(vid_path) as reader:
+        fps = reader.get_meta_data()['fps']
+        size = reader.get_meta_data()['size']
+        count = reader.count_frames()
+        frames = list(reader)
 
-    reader.close()
-    writer.release()
-    progress_bar.close()
+    output_path = os.path.join(downsampled_path, vid_name + '.avi')
+    with imageio.get_writer(output_path ,mode='I', fps=fps) as writer:
+        progress_bar  = tqdm(total=count)
+        progress_bar.set_description('      Downsampling')
+        for i, frame in enumerate(frames):
+            if i % frame_skip == 0:
+                writer.append_data(frame)
+
+            progress_bar.update()
+
+        progress_bar.close()
 
 def generate_single_vids(vid_path, masks_path, output_path):
     '''
