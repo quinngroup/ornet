@@ -108,21 +108,41 @@ def approach_one(eigen_vals, k=10, threshold=2):
             signals[i] = 0
     plot(eigen_vals[:,:k], signals, 'Raw Signal Plot')
 
-def approach_three(vid_name, eigen_vals, outdir_path, k=10, 
+def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10, 
                    window=20, threshold=2): #10, 2
     '''
-    Compute z-scores using a sliding window.
+    Generates a figure comprised of a time-series plot
+    of the eigenvalue vectors, and an outlier detection 
+    signals plot.
+
+    Parameters
+    ----------
+    vid_name: string
+        Name of the microscopy video.
+    eigen_vals: NumPy array (NXM)
+        Matrix comprised of eigenvalue vectors. 
+        N represents the number of frames in the
+        corresponding video, and M is the number of
+        mixture components.
+    outdir_path: string
+        Path to a directory to save the plots.
+    k: int
+        The number of leading eigenvalues to display.
+    window: int
+        The size of the window to be used for anomaly 
+        detection.
+    threshold: float
+        Value used to determine whether a signal value
+        is anomalous.  
+
+    Returns
+    -------
     '''
     eigen_vals_avgs = [np.mean(x) for x in eigen_vals]
-    #eigen_vals_avgs = [np.mean(x[:k]) for x in eigen_vals]
-    #eigen_vals_avgs = [np.median(x) for x in eigen_vals]
-    #eigen_vals_avgs = [np.median(x[:k]) for x in eigen_vals]
-
     moving_avgs = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     moving_stds = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     z_scores = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
     signals = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
-    #thresholds = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
 
     moving_avgs[:window] = 0
     moving_stds[:window] = 0
@@ -130,36 +150,20 @@ def approach_three(vid_name, eigen_vals, outdir_path, k=10,
     for i in range(window, moving_avgs.shape[0]):
         moving_avgs[i] = np.mean(eigen_vals_avgs[i - window:i])
         moving_stds[i] = np.std(eigen_vals_avgs[i - window:i])
-        #thresholds[i] = np.var(eigen_vals_avgs[i - window:i])
         z_scores[i] = (eigen_vals_avgs[i] - moving_avgs[i]) / moving_stds[i]
 
-    #threshold = np.var(eigen_vals_avgs)
     for i, score in enumerate(z_scores):
         if score > threshold:
             signals[i] = 1
+            print(i)
         elif score < threshold * -1:
             signals[i] = -1
-        else:
-            signals[i] = 0
-    '''
-    for i, score in enumerate(z_scores):
-        if score > thresholds[i]:
-            signals[i] = 1
-        elif score < thresholds[i] * -1:
-            signals[i] = -1
-        else:
-            signals[i] = 0
-    
-    print('Window Size: ', window)
-    print('Number of Peaks: ', np.sum(signals != 0))
-    for i, signal in enumerate(signals):
-        if signal != 0:
             print(i)
-    '''
+        else:
+            signals[i] = 0
 
     title = vid_name + ' Signals Plot'
-    #plot(eigen_vals[:,:k], z_scores, 'Sliding Window Z-Score Plot')
-    plot(eigen_vals[:,:k], signals, title, True, outdir_path)
+    plot(eigen_vals[:,:k], signals, title, False, outdir_path) #True to save
 
 
 def parse_cli(input_args):
@@ -199,7 +203,7 @@ def main():
         vid_name = os.path.split(vid_path)[1].split('.')[0]
         eigen_data_path = os.path.join(args['input'], vid_path)
         eigen_vals, eigen_vecs = data_loader(eigen_data_path)   
-        approach_three(vid_name, eigen_vals, args['outdir'])
+        temporal_anomaly_detection(vid_name, eigen_vals, args['outdir'])
 
     #approach_one(eigen_vals)
 

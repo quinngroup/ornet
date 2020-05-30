@@ -39,32 +39,30 @@ def extract_cells(vid_path, masks_path, output_path, show_vid=False):
     vid_name = os.path.split(vid_path)[1].split('.')[0]
     os.makedirs(output_path, exist_ok=True)
     with imageio.get_reader(vid_path) as reader:
-        frames = list(reader)
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
+        for i in range(segments):
+            vid_path = os.path.join(
+                output_path, 
+                vid_name + '_' + str(i + 1) + '.avi'
+            )
+            writers.append(imageio.get_writer(vid_path, mode='I', fps=fps))
 
-    for i in range(segments):
-        vid_path = os.path.join(
-            output_path, 
-            vid_name + '_' + str(i + 1) + '.avi'
-        )
-        writers.append(imageio.get_writer(vid_path, mode='I', fps=fps))
+        progress_bar = tqdm(total=reader.count_frames())
+        progress_bar.set_description('  Extracting cells')
+        for i, frame in enumerate(reader):
+            mask = cv2.cvtColor(masks[i], cv2.COLOR_GRAY2RGB)
+            #mask = masks[i]
+            for j in range(segments):
+                output = np.ma.masked_where(mask != j + 1, frame)
+                output = np.ma.filled(output, 0)
+                writers[j].append_data(output)
 
-    progress_bar = tqdm(total=reader.count_frames())
-    progress_bar.set_description('  Extracting cells')
-    for i, frame in enumerate(frames):
-        mask = cv2.cvtColor(masks[i], cv2.COLOR_GRAY2RGB)
-        #mask = masks[i]
-        for j in range(segments):
-            output = np.ma.masked_where(mask != j + 1, frame)
-            output = np.ma.filled(output, 0)
-            writers[j].append_data(output)
+            progress_bar.update()
 
-        progress_bar.update()
-
-    progress_bar.close()
-    for writer in writers:
-        writer.close()
+        progress_bar.close()
+        for writer in writers:
+            writer.close()
 
 
 if __name__ == "__main__":

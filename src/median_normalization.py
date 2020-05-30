@@ -30,34 +30,33 @@ def median_normalize(vid_name, vid_path, out_path):
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
         frame_count = reader.count_frames()
-        frames = list(reader)
 
-    progress_bar = tqdm(total=(2 * frame_count))
-    progress_bar.set_description(' Normalizing video')
+        progress_bar = tqdm(total=(2 * frame_count))
+        progress_bar.set_description(' Normalizing video')
 
-    for frame in frames:
-        grayscale_frame = np.array(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
-        flat_frame = grayscale_frame.flatten()
-        flat_frame[flat_frame > 0]
-        medians.append(np.median(flat_frame))
-        progress_bar.update()
-
-    medians = np.array(medians, dtype=np.uint8)
-    max_median = np.max(medians)
-    adjusted_medians = medians - max_median
-
-    output = os.path.join(out_path, vid_name + '.avi')
-    with imageio.get_writer(output, mode='I', fps=fps) as writer:
-        for i, frame in enumerate(frames):
+        for frame in reader:
             grayscale_frame = np.array(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
             flat_frame = grayscale_frame.flatten()
-            flat_frame[flat_frame != 0] += adjusted_medians[i]
-            out_frame = np.array(flat_frame, dtype=np.uint8).reshape(size)
-            color_frame = cv2.cvtColor(out_frame, cv2.COLOR_GRAY2RGB)
-            writer.append_data(color_frame)
+            flat_frame[flat_frame > 0]
+            medians.append(np.median(flat_frame))
             progress_bar.update()
-        
-        progress_bar.close()
+
+        medians = np.array(medians, dtype=np.uint8)
+        max_median = np.max(medians)
+        adjusted_medians = medians - max_median
+
+        output = os.path.join(out_path, vid_name + '.avi')
+        with imageio.get_writer(output, mode='I', fps=fps) as writer:
+            for i, frame in enumerate(reader):
+                grayscale_frame = np.array(cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY))
+                flat_frame = grayscale_frame.flatten()
+                flat_frame[flat_frame != 0] += adjusted_medians[i]
+                out_frame = np.array(flat_frame, dtype=np.uint8).reshape(size)
+                color_frame = cv2.cvtColor(out_frame, cv2.COLOR_GRAY2RGB)
+                writer.append_data(color_frame)
+                progress_bar.update()
+            
+            progress_bar.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Applies median \
