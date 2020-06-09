@@ -72,11 +72,11 @@ def absolute_distance_traveled(eigen_vecs):
     return distances
 
 
-def draw_bounding_boxes(frames, means, covars, eigen_vecs, 
+def spatial_anomaly_detection(frames, means, covars, eigen_vecs, 
                         k, fps, size, outdir_path, std_threshold=3):
     '''
     Draws bounding boxes around the mixture component
-    regions demonstrating the most variance. (?)
+    regions demonstrating the most variance.
 
     Parameters
     ----------
@@ -112,10 +112,10 @@ def draw_bounding_boxes(frames, means, covars, eigen_vecs,
     '''
 
     out_vid_path = os.path.join(outdir_path, 'bounding_box_example.mp4')
-    labels = spectral_clustering(eigen_vecs, k=k)
     box_colors = {}
     for i in range(k):
         box_colors[i] = np.random.randint(256, size=(3,))
+        #box_colors[i] = (30, 144, 255)
     
     distances = absolute_distance_traveled(eigen_vecs)   
     descending_distances_indices = np.flip(np.argsort(distances))
@@ -140,7 +140,7 @@ def draw_bounding_boxes(frames, means, covars, eigen_vecs,
                 if y_bounds[1] >= size[1]:
                     y_bounds[1] = size[1] - 1;
                 
-                color = box_colors[labels[i][j]]
+                #color = box_colors[index] #index in [0 - k]
                 frames[i][x_bounds[0]:x_bounds[1], y_bounds[0], :] = color
                 frames[i][x_bounds[0]:x_bounds[1], y_bounds[1], :] = color
                 frames[i][x_bounds[0], y_bounds[0]:y_bounds[1], :] = color
@@ -201,7 +201,7 @@ def main():
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
 
-    draw_bounding_boxes(frames, means, covars, eigen_vecs, 
+    spatial_anomaly_detection(frames, means, covars, eigen_vecs, 
                         k, fps, size, args['outdir'])
 
 if __name__ == '__main__':

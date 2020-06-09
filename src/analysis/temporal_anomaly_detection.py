@@ -64,7 +64,7 @@ def plot(eigen_vals, z_scores, title, save_fig, outdir_path=None):
     ax = fig.add_subplot(212)
     ax.plot(z_scores)
     ax.set_xlabel('Frame')
-    ax.set_ylabel('Z-Score')
+    ax.set_ylabel('Signal')
     if save_fig:
         file_name = os.path.join(outdir_path, title.split(' ')[0])
         plt.savefig(file_name)
@@ -162,7 +162,8 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
         else:
             signals[i] = 0
 
-    title = vid_name + ' Signals Plot'
+    #title = vid_name + ' Signals Plot'
+    title = ''
     plot(eigen_vals[:,:k], signals, title, False, outdir_path) #True to save
 
 
