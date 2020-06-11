@@ -71,7 +71,7 @@ def absolute_distance_traveled(eigen_vecs):
 
     return distances
 
-def does_overalap(box_one, box_two):
+def does_overlap(box_one, box_two):
     ''' 
     Determines whether box one intersects box two, or is contained 
     within box two.
@@ -90,21 +90,21 @@ def does_overalap(box_one, box_two):
 
     overlap_status = False
     #Top left corner check
-    if box_one[0][0] >= box_two[0][0] and box_one[0][0] <= box_two[1][0] \
-        and box_one[0][1] >= box_two[0][1] and box_one[0][1] <= box_two[2][1]:
-        overlap_stats = True
+    if box_one[0][0] >= box_two[0][0] and box_one[0][0] <= box_two[2][0] \
+        and box_one[0][1] >= box_two[0][1] and box_one[0][1] <= box_two[1][1]:
+        overlap_status = True
     #Bottom left corner check
-    elif box_one[2][0] >= box_two[0][0] and box_one[2][0] <= box_two[1][0] \
-        and box_one[2][1] >= box_two[0][1] and box_one[2][1] <= box_two[2][1]:
-        overlap_stats = True
+    elif box_one[2][0] >= box_two[0][0] and box_one[2][0] <= box_two[2][0] \
+        and box_one[2][1] >= box_two[0][1] and box_one[2][1] <= box_two[1][1]:
+        overlap_status = True
     #Top right corner check
-    elif box_one[1][0] >= box_two[0][0] and box_one[1][0] <= box_two[1][0] \
-        and box_one[1][1] >= box_two[0][1] and box_one[1][1] <= box_two[2][1]:
-        overlap_stats = True
+    elif box_one[1][0] >= box_two[0][0] and box_one[1][0] <= box_two[2][0] \
+        and box_one[1][1] >= box_two[0][1] and box_one[1][1] <= box_two[1][1]:
+        overlap_status = True
     #Bottom right corner check
-    elif box_one[3][0] >= box_two[0][0] and box_one[3][0] <= box_two[1][0] \
-        and box_one[3][1] >= box_two[0][1] and box_one[3][1] <= box_two[2][1]:
-        overlap_stats = True
+    elif box_one[3][0] >= box_two[0][0] and box_one[3][0] <= box_two[2][0] \
+        and box_one[3][1] >= box_two[0][1] and box_one[3][1] <= box_two[1][1]:
+        overlap_status = True
 
     return overlap_status
 
@@ -172,8 +172,8 @@ def find_initial_boxes(means, covars, size,
         
         current_box = [
             (x_bounds[0], y_bounds[0]),
-            (x_bounds[1], y_bounds[0]),
             (x_bounds[0], y_bounds[1]),
+            (x_bounds[1], y_bounds[0]),
             (x_bounds[1], y_bounds[1]),
         ]
 
@@ -184,9 +184,9 @@ def find_initial_boxes(means, covars, size,
             current_box_overlaps = False
             for prev_box in initial_boxes:
                 if not current_box_overlaps \
-                    or does_overlap(current_box, prev_box) \
-                    or does_overlap(prev_box, current_box):
-                        current_box_overlap = True
+                    and (does_overlap(current_box, prev_box) \
+                         or does_overlap(prev_box, current_box)):
+                        current_box_overlaps = True
 
             if not current_box_overlaps:
                 initial_boxes.append(current_box)
