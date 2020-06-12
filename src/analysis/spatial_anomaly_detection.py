@@ -131,7 +131,7 @@ def compute_region_boundaries(means, covars, size, frame, region, std_threshold=
     if col_bounds[0] < 0:
         col_bounds[0] = 0
 
-    if row_bounds[1] >= size[1]:
+    if col_bounds[1] >= size[1]:
         col_bounds[1] = size[1] - 1;
 
     return row_bounds, col_bounds
@@ -267,7 +267,10 @@ def spatial_anomaly_detection(frames, means, covars, eigen_vecs,
         number of mixture components.
     k: int
         Number of the most significant non-overlapping 
-        regions to display bounding boxes for.
+        regions to display bounding boxes for. The
+        actual number may be less than k, if the video
+        does not contain that many non-overlapping 
+        regions.
     fps: int
         Frames per second of the video.
     size: tuple (2,)
@@ -281,34 +284,34 @@ def spatial_anomaly_detection(frames, means, covars, eigen_vecs,
     '''
 
     out_vid_path = os.path.join(outdir_path, 'bounding_box_example.mp4')
-    initial_boxes = []
-    region_indicies = []
-    box_colors = {}
-    for i in range(k):
-        box_colors[i] = np.random.randint(256, size=(3,)) #(30, 144, 255)
-    
     distances = absolute_distance_traveled(eigen_vecs)   
     descending_distances_indices = np.flip(np.argsort(distances))
     region_indices = find_initial_boxes(means, covars, size, 
                                         descending_distances_indices, k)
+    num_of_boxes = len(region_indices)
+    box_colors = np.random.randint(256, size=(num_of_boxes, 3))
     with imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
-        for i, frame in enumerate(tqdm(frames)):
+        #for i, frame in enumerate(tqdm(frames)):
+        for i, frame in enumerate(frames):
+                avg_box_area = 0
+                print('Frame', i)
                 for index, j in enumerate(region_indices):
                     row_bounds, col_bounds = compute_region_boundaries(
                         means, covars, size, i, j
                     )
                     row_diff = row_bounds[1] - row_bounds[0]
                     col_diff = col_bounds[1] - col_bounds[0]
-                    print('Box ', index, 'Area: ', row_diff * col_diff)
+                    current_box_area = row_diff * col_diff
+                    avg_box_area = current_box_area / num_of_boxes
+                    print('Box ', index, 'Area: ', current_box_area)
 
-                    color = box_colors[index]
-                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = color
-                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = color
-                    frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = color
-                    frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = color
+                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
+                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
+                    frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+                    frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
                 
                 writer.append_data(frames[i])
-                print()
+                print('Average box area: ', avg_box_area, '\n')
 
 def parse_cli(args):
     '''
