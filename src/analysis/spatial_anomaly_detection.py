@@ -71,6 +71,71 @@ def absolute_distance_traveled(eigen_vecs):
 
     return distances
 
+def compute_region_boundaries(means, covars, size, frame, region, std_threshold=3):
+    '''
+    Computes the boundaries of a box for the given region on a specific frame.
+
+    Parameters
+    ----------
+    means: NumPy array (NxMx2)
+        Pixel coordinates corresponding to the mixture
+        component means. N is the number of video frames,
+        M the number of mixture components, and 2 denotes
+        the 2D pixel coordinate.
+    covars: NumPy array (NxMx2x2)
+        Covariance matrices of the guassian mixture 
+        components. N is the number of video frames,
+        M is the number of mixture components, and 2x2
+        denotes the covariance matrix.
+    size: tuple (2,)
+        Width and height of the video.
+    frame: int
+        The index of the video frame to utilize.
+    region: int
+        The index of the spatial region to create a box for.
+    std_threshold: float 
+        The number of standard deviations to use to compute
+        the spatial region of the bounding box. Default is
+        three.
+
+    Returns
+    -------
+    row_bounds, col_bounds: list (2,)
+        The row and column boundaries of the bounding box.
+        For row_bounds index 0 contains the row value 
+        corresponding to the top of the bounding box, while 
+        index 1 contains the row value corresponding to the
+        bottom of the box; Likewise, index 0 of col_bounds
+        corresponds to the left column value of the box and
+        index 1 corresponds to the right column value of the
+        box.
+    '''
+
+    row_diff = std_threshold * math.sqrt(covars[frame][region][0][0])
+    col_diff = std_threshold * math.sqrt(covars[frame][region][1][1])
+    row_bounds = [
+        int(means[frame][region][0] - row_diff), 
+        int(means[frame][region][0] + row_diff)
+    ]
+    col_bounds = [
+        int(means[frame][region][1] - col_diff), 
+        int(means[frame][region][1] + col_diff)
+    ]
+
+    if row_bounds[0] < 0:
+        row_bounds[0] = 0
+
+    if row_bounds[1] >= size[0]:
+        row_bounds[1] = size[0] - 1;
+
+    if col_bounds[0] < 0:
+        col_bounds[0] = 0
+
+    if row_bounds[1] >= size[1]:
+        col_bounds[1] = size[1] - 1;
+
+    return row_bounds, col_bounds
+
 def does_overlap(box_one, box_two):
     ''' 
     Determines whether box one intersects box two, or is contained 
@@ -89,19 +154,15 @@ def does_overlap(box_one, box_two):
     '''
 
     overlap_status = False
-    #Top left corner check
     if box_one[0][0] >= box_two[0][0] and box_one[0][0] <= box_two[2][0] \
         and box_one[0][1] >= box_two[0][1] and box_one[0][1] <= box_two[1][1]:
         overlap_status = True
-    #Bottom left corner check
     elif box_one[2][0] >= box_two[0][0] and box_one[2][0] <= box_two[2][0] \
         and box_one[2][1] >= box_two[0][1] and box_one[2][1] <= box_two[1][1]:
         overlap_status = True
-    #Top right corner check
     elif box_one[1][0] >= box_two[0][0] and box_one[1][0] <= box_two[2][0] \
         and box_one[1][1] >= box_two[0][1] and box_one[1][1] <= box_two[1][1]:
         overlap_status = True
-    #Bottom right corner check
     elif box_one[3][0] >= box_two[0][0] and box_one[3][0] <= box_two[2][0] \
         and box_one[3][1] >= box_two[0][1] and box_one[3][1] <= box_two[1][1]:
         overlap_status = True
@@ -150,31 +211,15 @@ def find_initial_boxes(means, covars, size,
     initial_boxes = []
     region_indices = []
     while j < descending_distances_indices.shape[0] \
-          and len(initial_boxes) < k:
+        and len(initial_boxes) < k:
         region = descending_distances_indices[j]
-        x_diff = std_threshold * math.sqrt(covars[0][region][0][0])
-        y_diff = std_threshold * math.sqrt(covars[0][region][1][1])
-        x_bounds = [int(means[0][region][0] - x_diff), int(means[0][region][0] + x_diff)]
-        y_bounds = [int(means[0][region][1] - y_diff), int(means[0][region][1] + y_diff)]
-
-        if x_bounds[0] < 0:
-            x_bounds[0] = 0
-
-        if x_bounds[0] >= size[0]:
-            x_bounds[0] = size[0] - 1;
-
-        if y_bounds[0] < 0:
-            y_bounds[0] = 0
-
-        if y_bounds[1] >= size[1]:
-            y_bounds[1] = size[1] - 1;
-
-        
+        row_bounds, col_bounds = compute_region_boundaries(means, covars, 
+                                                           size, 0, region)
         current_box = [
-            (x_bounds[0], y_bounds[0]),
-            (x_bounds[0], y_bounds[1]),
-            (x_bounds[1], y_bounds[0]),
-            (x_bounds[1], y_bounds[1]),
+            (row_bounds[0], col_bounds[0]),
+            (row_bounds[0], col_bounds[1]),
+            (row_bounds[1], col_bounds[0]),
+            (row_bounds[1], col_bounds[1]),
         ]
 
         if j == 0:
@@ -240,41 +285,30 @@ def spatial_anomaly_detection(frames, means, covars, eigen_vecs,
     region_indicies = []
     box_colors = {}
     for i in range(k):
-        box_colors[i] = np.random.randint(256, size=(3,))
-        #box_colors[i] = (30, 144, 255)
+        box_colors[i] = np.random.randint(256, size=(3,)) #(30, 144, 255)
     
     distances = absolute_distance_traveled(eigen_vecs)   
     descending_distances_indices = np.flip(np.argsort(distances))
-
     region_indices = find_initial_boxes(means, covars, size, 
                                         descending_distances_indices, k)
     with imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
         for i, frame in enumerate(tqdm(frames)):
                 for index, j in enumerate(region_indices):
-                    x_diff = std_threshold * math.sqrt(covars[i][j][0][0])
-                    y_diff = std_threshold * math.sqrt(covars[i][j][1][1])
-                    x_bounds = [int(means[i][j][0] - x_diff), int(means[i][j][0] + x_diff)]
-                    y_bounds = [int(means[i][j][1] - y_diff), int(means[i][j][1] + y_diff)]
+                    row_bounds, col_bounds = compute_region_boundaries(
+                        means, covars, size, i, j
+                    )
+                    row_diff = row_bounds[1] - row_bounds[0]
+                    col_diff = col_bounds[1] - col_bounds[0]
+                    print('Box ', index, 'Area: ', row_diff * col_diff)
 
-                    if x_bounds[0] < 0:
-                        x_bounds[0] = 0
-
-                    if x_bounds[0] >= size[0]:
-                        x_bounds[0] = size[0] - 1;
-
-                    if y_bounds[0] < 0:
-                        y_bounds[0] = 0
-
-                    if y_bounds[1] >= size[1]:
-                        y_bounds[1] = size[1] - 1;
-                        
                     color = box_colors[index]
-                    frames[i][x_bounds[0]:x_bounds[1], y_bounds[0], :] = color
-                    frames[i][x_bounds[0]:x_bounds[1], y_bounds[1], :] = color
-                    frames[i][x_bounds[0], y_bounds[0]:y_bounds[1], :] = color
-                    frames[i][x_bounds[1], y_bounds[0]:y_bounds[1], :] = color
+                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = color
+                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = color
+                    frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = color
+                    frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = color
                 
                 writer.append_data(frames[i])
+                print()
 
 def parse_cli(args):
     '''
