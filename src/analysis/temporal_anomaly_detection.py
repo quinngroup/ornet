@@ -23,6 +23,7 @@ import argparse
 
 import numpy as np
 import seaborn as sns
+from tqdm import tqdm
 import matplotlib.pyplot as plt
 
 def data_loader(eigen_data_path):
@@ -73,41 +74,6 @@ def plot(eigen_vals, z_scores, title, save_fig, outdir_path=None):
     
     plt.close()
 
-def approach_one(eigen_vals, k=10, threshold=2):
-    '''
-    Average all of the K eigenvalue time-series at each
-    time-point. Find the average of all of the averages then
-    perform z-score thresholding.
-
-    Parameters
-    ----------
-    eigen_vals: numpy array (N x K)
-       N eigenvalue vectors of length K, where
-       N is the number of frames in the corresponding
-       video and K is the number of mixture components.
-
-    Returns
-    -------
-    NoneType object
-    '''
-    
-    eigen_vals_avgs = [np.mean(x) for x in eigen_vals]
-    #eigen_vals_avgs = [np.mean(x[:k]) for x in eigen_vals]
-    mean_of_avgs = np.mean(eigen_vals_avgs)
-    std_of_avgs = np.std(eigen_vals_avgs)
-    z_scores = [(x - mean_of_avgs) / std_of_avgs for x in eigen_vals_avgs]
-    plot(eigen_vals[:,:k], z_scores, 'Raw Z-Score Plot')
-
-    signals = np.empty(shape=(len(z_scores),), dtype=np.float)
-    for i, score in enumerate(z_scores):
-        if score > threshold:
-            signals[i] = 1
-        elif score < threshold * -1:
-            signals[i] = -1
-        else:
-            signals[i] = 0
-    plot(eigen_vals[:,:k], signals, 'Raw Signal Plot')
-
 def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10, 
                    window=20, threshold=2): #10, 2
     '''
@@ -152,19 +118,21 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
         moving_stds[i] = np.std(eigen_vals_avgs[i - window:i])
         z_scores[i] = (eigen_vals_avgs[i] - moving_avgs[i]) / moving_stds[i]
 
-    for i, score in enumerate(z_scores):
-        if score > threshold:
-            signals[i] = 1
-            print(i)
-        elif score < threshold * -1:
-            signals[i] = -1
-            print(i)
-        else:
-            signals[i] = 0
+    plot_title = vid_name + ' Signals Plot'
+    #plot_title = ''
+    timepoint_title = vid_name + '.txt'
+    with open(os.path.join(outdir_path, timepoint_title), 'w+') as writer:
+        for i, score in enumerate(z_scores):
+            if score > threshold:
+                signals[i] = 1
+                writer.write(str(i) + '\n')
+            elif score < threshold * -1:
+                signals[i] = -1
+                writer.write(str(i) + '\n')
+            else:
+                signals[i] = 0
 
-    #title = vid_name + ' Signals Plot'
-    title = ''
-    plot(eigen_vals[:,:k], signals, title, False, outdir_path) #True to save
+    plot(eigen_vals[:,:k], signals, plot_title, True, outdir_path) #True to save
 
 
 def parse_cli(input_args):
@@ -193,20 +161,12 @@ def parse_cli(input_args):
     return vars(parser.parse_args(input_args))
 
 def main():
-    '''
-    eigen_data_path = \
-        '/extrastorage/ornet/Eigenspectrum/Eigendata/DsRed2-HeLa_3_15_LLO1part1_1.npz'
-    eigen_vals, eigen_vecs = data_loader(eigen_data_path)
-    '''
-    
     args =  parse_cli(sys.argv[1:])
-    for vid_path in os.listdir(args['input']):
+    for vid_path in tqdm(os.listdir(args['input'])):
         vid_name = os.path.split(vid_path)[1].split('.')[0]
         eigen_data_path = os.path.join(args['input'], vid_path)
         eigen_vals, eigen_vecs = data_loader(eigen_data_path)   
         temporal_anomaly_detection(vid_name, eigen_vals, args['outdir'])
-
-    #approach_one(eigen_vals)
 
 if __name__ == '__main__':
     main()

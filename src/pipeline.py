@@ -324,11 +324,11 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
 
     if os.path.isdir(input_path):
         vids = [x for x in os.listdir(input_path) if
-                x.split('.')[-1] in ['avi', 'mov']]
+                x.split('.')[-1] in ['avi', 'mov', '.mp4']]
         input_dir = input_path
     else:
         input_dir, vids, = os.path.split(input_path)
-        if vids.split('.')[-1] in ['avi', 'mov']:
+        if vids.split('.')[-1] in ['avi', 'mov', '.mp4']:
             vids = [vids]
         else:
             vids = []

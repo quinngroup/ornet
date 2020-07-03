@@ -5,6 +5,7 @@ anomalous behavior.
 
 import os
 import sys
+import csv
 import math
 import argparse
 
@@ -241,16 +242,16 @@ def find_initial_boxes(means, covars, size,
 
     return region_indices
 
-def spatial_anomaly_detection(frames, means, covars, eigen_vecs, 
-                        k, fps, size, outdir_path, std_threshold=3):
+def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs, 
+                        k, outdir_path, std_threshold=3):
     '''
     Draws bounding boxes around the mixture component
     regions demonstrating the most variance.
 
     Parameters
     ----------
-    frames: list
-        Video frames to be drawn on.
+    vid_path: string
+        Path to the input video.
     means: NumPy array (NxMx2)
         Pixel coordinates corresponding to the mixture
         component means. N is the number of video frames,
@@ -271,47 +272,56 @@ def spatial_anomaly_detection(frames, means, covars, eigen_vecs,
         actual number may be less than k, if the video
         does not contain that many non-overlapping 
         regions.
-    fps: int
-        Frames per second of the video.
-    size: tuple (2,)
-        Width and height of the video.
     outdir_path: string
-        Path to save the bounding box video.
+        Directory path to save the bounding box video.
     std_threshold: float 
         The number of standard deviations to use to compute
         the spatial region of the bounding box. Default is
         three.
     '''
 
-    out_vid_path = os.path.join(outdir_path, 'bounding_box_example.mp4')
-    distances = absolute_distance_traveled(eigen_vecs)   
-    descending_distances_indices = np.flip(np.argsort(distances))
-    region_indices = find_initial_boxes(means, covars, size, 
+    out_vid_path = os.path.join(
+        outdir_path, os.path.split(vid_path)[1].split('.')[0] + '.mp4'
+    )
+    with imageio.get_reader(vid_path) as reader, imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
+        #frames = list(reader)
+        fps = reader.get_meta_data()['fps']
+        size = reader.get_meta_data()['size']
+        distances = absolute_distance_traveled(eigen_vecs)   
+        descending_distances_indices = np.flip(np.argsort(distances))
+        region_indices = find_initial_boxes(means, covars, size, 
                                         descending_distances_indices, k)
-    num_of_boxes = len(region_indices)
-    box_colors = np.random.randint(256, size=(num_of_boxes, 3))
-    with imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
-        #for i, frame in enumerate(tqdm(frames)):
-        for i, frame in enumerate(frames):
-                avg_box_area = 0
-                print('Frame', i)
-                for index, j in enumerate(region_indices):
-                    row_bounds, col_bounds = compute_region_boundaries(
-                        means, covars, size, i, j
-                    )
-                    row_diff = row_bounds[1] - row_bounds[0]
-                    col_diff = col_bounds[1] - col_bounds[0]
-                    current_box_area = row_diff * col_diff
-                    avg_box_area = current_box_area / num_of_boxes
-                    print('Box ', index, 'Area: ', current_box_area)
+        num_of_boxes = len(region_indices)
+        box_colors = np.random.randint(256, size=(num_of_boxes, 3))
 
-                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
-                    frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
-                    frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
-                    frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
-                
-                writer.append_data(frames[i])
-                print('Average box area: ', avg_box_area, '\n')
+        #for i, frame in enumerate(tqdm(reader)):
+        for i, frame in enumerate(reader):
+            current_frame = frame
+            avg_box_area = 0
+            print('Frame', i)
+            for index, j in enumerate(region_indices):
+                row_bounds, col_bounds = compute_region_boundaries(
+                    means, covars, size, i, j
+                )
+                row_diff = row_bounds[1] - row_bounds[0]
+                col_diff = col_bounds[1] - col_bounds[0]
+                current_box_area = row_diff * col_diff
+                avg_box_area = current_box_area / num_of_boxes
+                print('Box ', index, 'Area: ', current_box_area)
+
+                #frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
+                #frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
+                #frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+                #frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+
+                current_frame[row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
+                current_frame[row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
+                current_frame[row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+                current_frame[row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+            
+            #writer.append_data(frames[i])
+            writer.append_data(current_frame)
+            print('Average box area: ', avg_box_area, '\n')
 
 def parse_cli(args):
     '''
@@ -351,13 +361,8 @@ def main():
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
     inter = np.load(args['intermediates'])
     means, covars = inter['means'], inter['covars']
-    with imageio.get_reader(args['video']) as reader:
-        frames = list(reader)
-        fps = reader.get_meta_data()['fps']
-        size = reader.get_meta_data()['size']
-
-    spatial_anomaly_detection(frames, means, covars, eigen_vecs, 
-                        args['box_number'], fps, size, args['outdir'])
+    spatial_anomaly_detection(args['video'], means, covars, eigen_vecs, 
+                        args['box_number'], args['outdir'])
 
 if __name__ == '__main__':
     main()
