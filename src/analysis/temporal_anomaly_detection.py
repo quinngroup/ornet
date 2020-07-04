@@ -91,7 +91,8 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
         corresponding video, and M is the number of
         mixture components.
     outdir_path: string
-        Path to a directory to save the plots.
+        Path to a directory to save the plots and anomalous
+        time points.
     k: int
         The number of leading eigenvalues to display.
     window: int
@@ -103,6 +104,7 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
 
     Returns
     -------
+    NoneType object
     '''
     eigen_vals_avgs = [np.mean(x) for x in eigen_vals]
     moving_avgs = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
@@ -132,7 +134,7 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
             else:
                 signals[i] = 0
 
-    plot(eigen_vals[:,:k], signals, plot_title, True, outdir_path) #True to save
+    plot(eigen_vals[:,:k], signals, plot_title, False, outdir_path) #True to save
 
 
 def parse_cli(input_args):

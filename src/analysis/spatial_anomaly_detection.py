@@ -11,7 +11,6 @@ import argparse
 
 import imageio
 import numpy as np
-from tqdm import tqdm
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import euclidean
 
@@ -243,7 +242,7 @@ def find_initial_boxes(means, covars, size,
     return region_indices
 
 def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs, 
-                        k, outdir_path, std_threshold=3):
+                        k, outdir_path, std_threshold=3, display_areas=False):
     '''
     Draws bounding boxes around the mixture component
     regions demonstrating the most variance.
@@ -278,13 +277,20 @@ def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs,
         The number of standard deviations to use to compute
         the spatial region of the bounding box. Default is
         three.
+    display_areas: bool
+       Indicates whether to print the areas of the bounding
+       boxes.
+
+    Returns
+    -------
+    NoneType object
     '''
 
     out_vid_path = os.path.join(
         outdir_path, os.path.split(vid_path)[1].split('.')[0] + '.mp4'
     )
-    with imageio.get_reader(vid_path) as reader, imageio.get_writer(out_vid_path, mode='I', fps=1) as writer:
-        #frames = list(reader)
+    with imageio.get_reader(vid_path) as reader, \
+         imageio.get_writer(out_vid_path, mode='I', fps=100) as writer:
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
         distances = absolute_distance_traveled(eigen_vecs)   
@@ -294,11 +300,12 @@ def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs,
         num_of_boxes = len(region_indices)
         box_colors = np.random.randint(256, size=(num_of_boxes, 3))
 
-        #for i, frame in enumerate(tqdm(reader)):
         for i, frame in enumerate(reader):
             current_frame = frame
             avg_box_area = 0
-            print('Frame', i)
+            if display_areas:
+                print('Frame', i)
+
             for index, j in enumerate(region_indices):
                 row_bounds, col_bounds = compute_region_boundaries(
                     means, covars, size, i, j
@@ -307,21 +314,17 @@ def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs,
                 col_diff = col_bounds[1] - col_bounds[0]
                 current_box_area = row_diff * col_diff
                 avg_box_area = current_box_area / num_of_boxes
-                print('Box ', index, 'Area: ', current_box_area)
-
-                #frames[i][row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
-                #frames[i][row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
-                #frames[i][row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
-                #frames[i][row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
+                if display_areas:
+                    print('Box ', index, 'Area: ', current_box_area)
 
                 current_frame[row_bounds[0]:row_bounds[1], col_bounds[0], :] = box_colors[index]
                 current_frame[row_bounds[0]:row_bounds[1], col_bounds[1], :] = box_colors[index]
                 current_frame[row_bounds[0], col_bounds[0]:col_bounds[1], :] = box_colors[index]
                 current_frame[row_bounds[1], col_bounds[0]:col_bounds[1], :] = box_colors[index]
             
-            #writer.append_data(frames[i])
             writer.append_data(current_frame)
-            print('Average box area: ', avg_box_area, '\n')
+            if display_areas:
+                print('Average box area: ', avg_box_area, '\n')
 
 def parse_cli(args):
     '''

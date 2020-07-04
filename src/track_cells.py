@@ -18,7 +18,7 @@ from tqdm import tqdm
 from matplotlib import pyplot as plt
 
 
-def track_cells(vidfile, maskfile, show_video=False):
+def track_cells(vidfile, maskfile, show_video=False, display_progress=True):
     """
     reads a video file and initial masks and returns a set of frames for each cell
 
@@ -31,6 +31,9 @@ def track_cells(vidfile, maskfile, show_video=False):
         path to a single vtk mask file
     show_video : boolean (Default : False)
         If true, display video with contours drawn during processing
+    display_progress: bool
+        Flag that indicates whether to show the progress bar
+        or not.
 
     Returns
     ---------
@@ -64,8 +67,9 @@ def track_cells(vidfile, maskfile, show_video=False):
     for i in range(number_of_segments):  # separates each mask from the vtk and lists them
         masks.append(im != i + 1)
 
-    progress_bar = tqdm(total=vf.count_frames())
-    progress_bar.set_description('    Tracking cells')
+    if display_progress:
+        progress_bar = tqdm(total=vf.count_frames())
+        progress_bar.set_description('    Tracking cells')
     for frameNum, frame in enumerate(vf):  # while( vf.isOpened() ):
         for i in range(number_of_segments):  # adds a copy of the current frame for each segment
             ims.append(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
@@ -135,12 +139,14 @@ def track_cells(vidfile, maskfile, show_video=False):
         del ims[:]
         del contours[:]
         del masks[:]
-        progress_bar.update()
+        if display_progress:
+            progress_bar.update()
 
     vf.close()
-    progress_bar.close()
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    if display_progress:
+        progress_bar.close()
 
     return outs
 

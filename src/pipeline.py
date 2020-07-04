@@ -21,7 +21,7 @@ from ornet.affinityfunc import get_all_aff_tables
 from ornet.extract_cells import extract_cells
 from ornet.median_normalization import median_normalize as normalize
 
-def constrain_vid(vid_path, out_path, constrain_count):
+def constrain_vid(vid_path, out_path, constrain_count, display_progress=True):
     '''
     Constrains the input video to specified number of frames, and write the
     result to an output video (.avi). If the video contains less frames than
@@ -36,6 +36,9 @@ def constrain_vid(vid_path, out_path, constrain_count):
     constrain_count: int
         First N number of frames to extract from the video.
         If value is -1, then the entire video is used.
+    display_progress: bool
+        Flag that indicates whether to show the progress bar
+        or not.
 
     Returns
     ----------
@@ -51,8 +54,10 @@ def constrain_vid(vid_path, out_path, constrain_count):
             constrain_count = count 
 
         with imageio.get_writer(out_path, mode='I', fps=fps) as writer:
-            progress_bar = tqdm(total=constrain_count)
-            progress_bar.set_description('Constraining video')
+            if display_progress:
+                progress_bar = tqdm(total=constrain_count)
+                progress_bar.set_description('Constraining video')
+
             i = 0
             for frame in reader:
                 if i == constrain_count:
@@ -60,9 +65,14 @@ def constrain_vid(vid_path, out_path, constrain_count):
                 else:
                     writer.append_data(frame)
                     i += 1
-                progress_bar.update()
 
-            progress_bar.close()
+                if display_progress:
+                    progress_bar.update()
+
+            if display_progress:
+                progress_bar.close()
+            else:
+                print("Video constraining complete.")
 
 def cell_segmentation(vid_name, vid_path, masks_path, out_path):
     '''
