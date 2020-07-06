@@ -41,7 +41,7 @@ class Test_Pipeline(unittest.TestCase):
 		try:
 			pipeline.downsample_vid(vid_name, 
 				os.path.join(normalized_path, vid_name + '.avi'), 
-				masks_path, downsampled_path, 100)
+				'./data/test_vid.vtk', downsampled_path, 100)
 		except:
 			self.assertTrue(False)
 
@@ -56,7 +56,7 @@ class Test_Pipeline(unittest.TestCase):
 		try:
 			pipeline.generate_single_vids(
 					os.path.join(downsampled_path, vid_name + '.avi'),
-					masks_path, tmp_path)
+					masks_path, tmp_path, 100)
 			pipeline.convert_to_grayscale(os.path.join(tmp_path, 
 							'test_vid_1.avi'), tmp_path)
 		except:
