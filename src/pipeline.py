@@ -16,7 +16,6 @@ from tqdm import tqdm
 
 from ornet.gmm.run_gmm import skl_gmm
 from ornet.cells_to_gray import vid_to_gray
-from ornet.track_cells import track_cells
 from ornet.affinityfunc import get_all_aff_tables
 from ornet.extract_cells import extract_cells
 from ornet.median_normalization import median_normalize as normalize
@@ -73,28 +72,6 @@ def constrain_vid(vid_path, out_path, constrain_count, display_progress=True):
                 progress_bar.close()
             else:
                 print("Video constraining complete.")
-
-def cell_segmentation(vid_name, vid_path, masks_path, out_path):
-    '''
-    Generates segmentation masks for every frame in the video, and saves
-    the output at the specified output path.
-
-    Parameters
-    ----------
-    vid_path: String
-        Path to input video.
-    masks_path: String
-        Path to initial segmentation mask.
-    out_path: String
-        Path to output directory.
-
-    Returns
-    ----------
-    NoneType object
-    '''
-    masks = track_cells(vid_path, masks_path, show_video=False)
-    np.save(os.path.join(out_path, vid_name + 'MASKS.npy'), masks)
-
 
 def median_normalize(vid_name, input_path, out_path):
     '''
@@ -198,7 +175,7 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
 
             progress_bar.close()
 
-def generate_single_vids(vid_path, masks_path, output_path):
+def generate_single_vids(vid_path, masks_path, output_path, downsample=1):
     '''
     Extracts individual cells using the segmentation masks.
 
@@ -210,12 +187,15 @@ def generate_single_vids(vid_path, masks_path, output_path):
         Path to the segmentation mask for the input video.
     output_path: String
         Directory to save the individual videos.
+    downsample: int
+        The number of frames to skip. Default is 1, thus no
+        downsampling.
 
     Returns
     ----------
     NoneType object
     '''
-    extract_cells(vid_path, masks_path, output_path)
+    extract_cells(vid_path, masks_path, output_path, downsample)
 
 
 def convert_to_grayscale(vid_path, output_path):
@@ -334,11 +314,11 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
 
     if os.path.isdir(input_path):
         vids = [x for x in os.listdir(input_path) if
-                x.split('.')[-1] in ['avi', 'mov', '.mp4']]
+                x.split('.')[-1] in ['avi', 'mov', 'mp4']]
         input_dir = input_path
     else:
         input_dir, vids, = os.path.split(input_path)
-        if vids.split('.')[-1] in ['avi', 'mov', '.mp4']:
+        if vids.split('.')[-1] in ['avi', 'mov', 'mp4']:
             vids = [vids]
         else:
             vids = []
@@ -352,55 +332,48 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
         out_path = os.path.join(output_path, 'outputs')
         vid_name = vid.split('.')[0]
         vid_name = re.sub(' \(2\)| \(Converted\)', '', vid_name)
-        full_video = os.path.join(out_path, vid_name + '.avi')
-        masks_path = os.path.join(out_path, vid_name + 'MASKS.npy')
-        normalized_path = os.path.join(out_path, 'normalized')
-        downsampled_path = os.path.join(out_path, 'downsampled')
-        singles_path = os.path.join(out_path, 'singles')
-        intermediates_path = os.path.join(out_path, 'intermediates')
-        distances_path = os.path.join(out_path, 'distances')
-        tmp_path = os.path.join(out_path, 'tmp')
+        full_vid_path = os.path.join(out_path, vid_name + '.avi')
+        mask_path = os.path.join(initial_masks_dir, vid_name + '.vtk')
+        normalized_dir_path = os.path.join(out_path, 'normalized')
+        normalized_vid_path = os.path.join(normalized_dir_path, 
+                                           vid_name + '_normalized.avi')
+        singles_dir_path = os.path.join(out_path, 'singles')
+        intermediates_dir_path = os.path.join(out_path, 'intermediates')
+        distances_dir_path = os.path.join(out_path, 'distances')
+        tmp_dir_path = os.path.join(out_path, 'tmp')
 
         os.makedirs(out_path, exist_ok=True)
-        os.makedirs(normalized_path, exist_ok=True)
-        os.makedirs(downsampled_path, exist_ok=True)
-        os.makedirs(singles_path, exist_ok=True)
-        os.makedirs(intermediates_path, exist_ok=True)
-        os.makedirs(distances_path, exist_ok=True)
-        os.makedirs(tmp_path, exist_ok=True)
+        os.makedirs(normalized_dir_path, exist_ok=True)
+        os.makedirs(singles_dir_path, exist_ok=True)
+        os.makedirs(intermediates_dir_path, exist_ok=True)
+        os.makedirs(distances_dir_path, exist_ok=True)
+        os.makedirs(tmp_dir_path, exist_ok=True)
 
-        constrain_vid(os.path.join(input_dir, vid), full_video, 
+        constrain_vid(os.path.join(input_dir, vid), full_vid_path, 
                       constrain_count)
-        cell_segmentation(vid_name, full_video,
-                          os.path.join(initial_masks_dir, vid_name + '.vtk'),
-                          out_path)
-        median_normalize(vid_name, full_video, normalized_path)
-        downsample_vid(vid_name, full_video,
-                       masks_path, downsampled_path, downsample)
-        downsample_vid(vid_name + '_gray',
-                       os.path.join(normalized_path, vid_name + '.avi'),
-                       masks_path, downsampled_path, downsample)
-        generate_single_vids(os.path.join(downsampled_path, vid_name + '.avi'),
-                             masks_path, singles_path)
-        generate_single_vids(os.path.join(downsampled_path, vid_name + '_gray.avi'),
-                             masks_path, tmp_path)
-        single_vids = os.listdir(tmp_path)
+        median_normalize(vid_name + '_normalized', full_vid_path, 
+                         normalized_dir_path)
+        generate_single_vids(full_vid_path, mask_path, singles_dir_path, 
+                             downsample)
+        generate_single_vids(normalized_vid_path, mask_path, tmp_dir_path, 
+                             downsample)
 
+        single_vids = os.listdir(tmp_dir_path)
         progress_bar = tqdm(total=len(single_vids))
         progress_bar.set_description('Converting to gray')
         for single in single_vids:
-            convert_to_grayscale(os.path.join(tmp_path, single), tmp_path)
-            shutil.move(os.path.join(tmp_path, single),
-                        os.path.join(singles_path, single))
+            convert_to_grayscale(os.path.join(tmp_dir_path, single), 
+                                 tmp_dir_path)
+            shutil.move(os.path.join(tmp_dir_path, single),
+                        os.path.join(singles_dir_path, single))
             progress_bar.update()
 
         progress_bar.close()
-        compute_gmm_intermediates(tmp_path, intermediates_path)
-        compute_distances(intermediates_path, distances_path)
 
-        os.remove(full_video)
-        os.remove(masks_path)
-        shutil.rmtree(normalized_path)
-        shutil.rmtree(downsampled_path)
-        shutil.rmtree(tmp_path)
+        compute_gmm_intermediates(tmp_dir_path, intermediates_dir_path)
+        compute_distances(intermediates_dir_path, distances_dir_path)
+
+        os.remove(full_vid_path)
+        shutil.rmtree(normalized_dir_path)
+        shutil.rmtree(tmp_dir_path)
         print() #New line for output formatting
