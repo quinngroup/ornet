@@ -22,18 +22,6 @@ tmp_path = os.path.join(out_path, 'tmp')
 
 class Test_Pipeline(unittest.TestCase):
 
-	def test_cell_segmentation(self):
-		'''
-		Tests the cell segmentation function defined in track_cells.py.
-		'''
-		try:
-			pipeline.cell_segmentation(vid_name, input_path, 
-					os.path.join('data', vid_name + '.vtk'), out_path)
-		except:
-			self.assertTrue(False)
-
-		self.assertTrue(True)
-
 	def test_normalize(self):
 		'''
 		Tests the median normalization function defined in median_normalization.py.
