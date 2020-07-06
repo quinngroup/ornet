@@ -5,7 +5,7 @@ microscopy imagery of organelles.
 
 <img src="img/MitoEx.png" width="400">
 
-*Mitochondria in a single cell, with red flourescent tagging* 
+*Mitochondria in a single cell, with red flourescent tagging.* 
 
 ## Purpose
 Analyzing the morphological changes organelles undergo after exposure to external stimuli is significant because some structures offer crucial insight into the manner in which human cells responds to viral or bacterial infections. This framework is intended to mitigate the need for manual inspection of fluorescence microscopy videos to identify time points and frame regions where significant changes are occurring.
