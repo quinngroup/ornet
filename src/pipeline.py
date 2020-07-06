@@ -129,8 +129,7 @@ def gray_to_avi(vid_name, gray_path, original_path, out_path):
     writer.release()
 
 
-def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
-                   frame_skip):
+def downsample_vid(vid_name, vid_path, out_dir_path, frame_skip):
     '''
     Takes an input video and saves a downsampled version 
     of it, by skipping a specified number of frames. The
@@ -142,9 +141,7 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
         Name of the input video.
     vid_path: String
         Path to the input video.
-    masks_path: String
-        Path to the input masks.
-    downsampled_path:
+    out_dir_path:
         Path to directory where the downsampled video will be saved.
     frame_skip:
         The number of frames to skip for downsampling.
@@ -153,17 +150,11 @@ def downsample_vid(vid_name, vid_path, masks_path, downsampled_path,
     ----------
     NoneType object
     '''
-    masks = np.load(masks_path)
-    masks_downsampled = [frame for i, frame in enumerate(masks) if
-                         i % frame_skip == 0]
-    np.save(os.path.join(downsampled_path, vid_name + '.npy'),
-            masks_downsampled)
-
     with imageio.get_reader(vid_path) as reader:
         fps = reader.get_meta_data()['fps']
         size = reader.get_meta_data()['size']
         count = reader.count_frames()
-        output_path = os.path.join(downsampled_path, vid_name + '.avi')
+        output_path = os.path.join(out_dir_path, vid_name + '.avi')
         with imageio.get_writer(output_path ,mode='I', fps=fps) as writer:
             progress_bar  = tqdm(total=count)
             progress_bar.set_description('      Downsampling')
