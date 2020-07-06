@@ -1,5 +1,5 @@
 '''
-Draws bounding boxes around components demonstrating simalar
+Draws bounding boxes around subcellular demonstrating simalar
 anomalous behavior.
 '''
 
@@ -13,37 +13,6 @@ import imageio
 import numpy as np
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import euclidean
-
-def spectral_clustering(eigen_vecs, k=3):
-    '''
-    K-means clustering of the Guassian mixture
-    components based on their eigenvector values.
-
-    Parameters
-    ----------
-    eigen_vecs: NumPy array (NxMxM)
-        Eigenvector matrix. N represents the number of
-        frames in the corresponding video, M is the
-        number of mixture components.
-    k: int
-        Number of clusters for the spectral clustering
-        algorithm.
-
-    Returns
-    -------
-    labels: list (NxM)
-        Cluster membership labels of the mixture
-        components. N represents the number of 
-        frames, and M is the number of mixture
-        components.
-    '''
-    
-    labels = []
-    for i in range(eigen_vecs.shape[0]):
-        kmeans = KMeans(n_clusters=k).fit(eigen_vecs[i])
-        labels.append(kmeans.labels_)
-
-    return labels
 
 def absolute_distance_traveled(eigen_vecs):
     '''

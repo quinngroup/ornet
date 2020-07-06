@@ -1,9 +1,11 @@
 '''
-Tracks segmentaiton masks, extracts the individual cells, 
-and downsamples the individual cell videos.
+Extracts individual cells from microscopy videos that 
+contain multiple cells. Also, downsamples the 
+individual cell videos.
 '''
 
 import os
+import sys
 import random
 import argparse
 from functools import partial
@@ -175,13 +177,46 @@ def extract_cells(vidfile, maskfile, output_path, downsample=1, show_video=False
     if display_progress:
         progress_bar.close()
 
-def main():
-    extract_cells('/home/marcus/Desktop/Scipy/Scipy-2020/samples/llo/llo.mp4',
-                '/home/marcus/Desktop/Scipy/Scipy-2020/samples/llo/llo.vtk',
-                '/home/marcus/Desktop/singles-test',
-                100,
-                show_video=True
+def parse_cli(args):
+    '''
+    Parses arguments from the cli.
+
+    Parameters
+    ----------
+    args: list of strings
+        Argument options and values.
+
+    Returns
+    ----------
+    args: dict
+        Argument options are the keys and the values are
+        the information supplied from the cli.
+    '''
+
+    parser = argparse.ArgumentParser(
+        description='Extracts individual cells from microscopy videos that'
+                     + ' contain multiple cells. Also, downsamples the'
+                     + ' individual cell videos.'
     )
-        
+    parser.add_argument('-i', '--input', required=True,
+                        help='Path to input microscopy video.')
+    parser.add_argument('-m', '--mask', required=True,
+                        help='Path to initial segmentation of the'
+                              + ' microscopy video.')
+    parser.add_argument('-o', '--output', default=os.getcwd(),
+                        help='Path to the directory to save the videos.')
+    parser.add_argument('-d', '--downsample', type=int, default=1,
+                        help='Number of frames to skip.')
+    parser.add_argument('--show_vid', default=False, action='store_true',
+                        help='Show video of extraction.')
+
+    return vars(parser.parse_args(args))
+    
+
+def main():
+    args = parse_cli(sys.argv[1:])
+    extract_cells(args['input'], args['mask'], args['output'], 
+                  downsample=args['downsample'], show_video=args['show_vid'])
+
 if __name__ == '__main__':
     main()

@@ -1,20 +1,5 @@
 '''
 Anomaly detection of of eigenvalue time-series data.
-
-Approach 1:
-Average all of the K eigenvalue time-series at each
-time-point. Find the average of all of the averages then
-perform z-score thresholding.
-
-Approach 2:
-Calculate z-scores for each eigenvalue time-series 
-independent of each other, perfrom a vote to declare
-a time point anomalous.
-
-Approach 3:
-Adaptive thresholding that uses a sliding window to
-calculate a moving average which z-scores are computed
-with respect to.
 '''
 
 import os
