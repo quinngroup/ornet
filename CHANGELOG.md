@@ -1,5 +1,9 @@
 # OrNet
 
+## v0.2.2
+
+- Security patch.
+
 ---
 ## v0.2.1
 
