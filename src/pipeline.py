@@ -247,7 +247,7 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
     progress_bar.close()
 
 
-def compute_distances(intermediates_path, output_path):
+def compute_distances(intermediates_path, distances_path):
     '''
     Generate distances between means using Hellinger Distance.
 
@@ -255,7 +255,7 @@ def compute_distances(intermediates_path, output_path):
     ----------
     intermediates_path: String
         Path to the GMM intermediates.
-    output_path: String
+    distances_path: String
         Directory to save the distance ouptuts.
 
     Returns
@@ -263,15 +263,21 @@ def compute_distances(intermediates_path, output_path):
     NoneType object
     '''
 
-    intermediates = os.listdir(intermediates_path)
+    all_intermediates = os.listdir(intermediates_path)
+    distances = os.listdir(distances_path)
+    intermediates = []
+    for x in all_intermediates:
+        file_name = x.split('.')[0]
+        if file_name + '.npy' not in distances:
+           intermediates.append(file_name)
+    
     progress_bar = tqdm(total=len(intermediates))
     progress_bar.set_description('Computing distance')
     for intermediate in intermediates:
-        vid_inter = np.load(os.path.join(intermediates_path, intermediate))
+        vid_inter = np.load(os.path.join(intermediates_path, intermediate + '.npz'))
         table = get_all_aff_tables(vid_inter['means'], vid_inter['covars'],
                                    'Hellinger')
-        np.save(os.path.join(output_path, intermediate.split('.')[0] + '.npy'),
-                table)
+        np.save(os.path.join(distances_path, intermediate + '.npy'), table)
         progress_bar.update()
 
     progress_bar.close()
@@ -313,14 +319,15 @@ def run(input_path, initial_masks_dir, output_path, constrain_count=-1,
             vids = [vids]
         else:
             vids = []
-
-    if len(vids) == 0:
+    num_of_vids = len(vids)
+    if num_of_vids == 0:
         print('No videos were found.')
         quit(1)
 
-    for vid in vids:
-        print(vid)
-        out_path = os.path.join(output_path, 'outputs')
+    for i, vid in enumerate(vids):
+        #print(str(i) + ':', vid)
+        print(vid + ':', '(' + str(i + 1) + '/' + str(num_of_vids) + ')')
+        out_path = os.path.join(output_path, 'ornet-outputs')
         vid_name = vid.split('.')[0]
         vid_name = re.sub(' \(2\)| \(Converted\)', '', vid_name)
         full_vid_path = os.path.join(out_path, vid_name + '.avi')
