@@ -234,11 +234,11 @@ def compute_gmm_intermediates(vid_dir, intermediates_path):
         try:
             vid_path = os.path.join(vid_dir, vid_name)
             vid = np.load(vid_path)
-            means, covars, weights, precisions = skl_gmm(vid)
+            means, covars, weights, precisions, predictions = skl_gmm(vid)
             np.savez(os.path.join(intermediates_path,
                                   vid_name.split('.')[0] + '.npz'),
                      means=means, covars=covars, weights=weights,
-                     precs=precisions)
+                     precs=precisions, preds=predictions)
         except:
             print('Disappering cell: ' + vid_name)
 

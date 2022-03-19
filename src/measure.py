@@ -56,7 +56,7 @@ def multivariate_js(m1, s1, m2, s2):
     return 0.5 * (pq + qp)
 
 
-def multivariate_hellinger(u1, cov1, u2, cov2, gamma=0.00125):
+def multivariate_hellinger(u1, cov1, u2, cov2, gamma=0.125):
     """
     Hellinger distance measure for high-dimensional gaussians. For
     use with analytic parameters, rather than evaluating empirical distributions.

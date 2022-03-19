@@ -1,7 +1,10 @@
+import itertools
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.linalg as sla
 from sklearn.mixture import GaussianMixture
+from tqdm import tqdm
 
 from ornet.gmm import image, params, viz
 
@@ -40,6 +43,11 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     if vizual:
         plt.imshow(img)
         plt.show()
+
+    pixel_locations = list(itertools.product(
+        np.arange(vid.shape[1]), 
+        np.arange(vid.shape[2])
+    ))
     X = image.img_to_px(img)
     PI, MU, CV = params.image_init(img, k=None,
                                    min_distance=min_distance,
@@ -57,11 +65,13 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     means = [gmmodel.means_]
     weights = [gmmodel.weights_]
     precisions = [gmmodel.precisions_]
+    predictions = []
+    predictions.append(gmmodel.predict_proba(pixel_locations))
 
     # set warm start to true to use previous parameters
     gmmodel.warm_start = True
 
-    for i in range(0 + skipframes, vid.shape[0], skipframes):
+    for i in tqdm(range(0 + skipframes, vid.shape[0], skipframes), leave=False):
         img = vid[i]
         if vizual:
             plt.imshow(img)
@@ -73,12 +83,14 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         means = np.append(means, [gmmodel.means_], axis=0)
         weights = np.append(weights, [gmmodel.weights_], axis=0)
         precisions = np.append(precisions, [gmmodel.precisions_], axis=0)
+        predictions.append(gmmodel.predict_proba(pixel_locations))
 
         if vizual:
             viz.plot_results(gmmodel.means_, gmmodel.covariances_,
                              0, img.shape[1], 0, img.shape[0], 0, 'this')
 
-    return means, covars, weights, precisions
+    predictions = np.array(predictions)
+    return means, covars, weights, precisions, predictions
 
 
 def run_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
