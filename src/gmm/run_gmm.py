@@ -66,7 +66,10 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
     weights = [gmmodel.weights_]
     precisions = [gmmodel.precisions_]
     predictions = []
-    predictions.append(gmmodel.predict_proba(pixel_locations))
+
+    preds = gmmodel.predict_proba(pixel_locations)
+    preds = np.argmax(preds, axis=1)
+    predictions.append(preds)
 
     # set warm start to true to use previous parameters
     gmmodel.warm_start = True
@@ -83,7 +86,10 @@ def skl_gmm(vid, vizual=False, skipframes=1, threshold_abs=6, min_distance=10):
         means = np.append(means, [gmmodel.means_], axis=0)
         weights = np.append(weights, [gmmodel.weights_], axis=0)
         precisions = np.append(precisions, [gmmodel.precisions_], axis=0)
-        predictions.append(gmmodel.predict_proba(pixel_locations))
+
+        preds = gmmodel.predict_proba(pixel_locations)
+        preds = np.argmax(preds, axis=1)
+        predictions.append(preds)
 
         if vizual:
             viz.plot_results(gmmodel.means_, gmmodel.covariances_,
