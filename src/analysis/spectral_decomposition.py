@@ -1,13 +1,16 @@
 '''
-A utility module to assist in OrNet analysis operations.
+A module to perform spectral decomposition for downstream
+OrnNet analysis tasks.
 '''
 
+import argparse
+import sys
 import os
 
 import numpy as np
-from tqdm import tqdm
 from scipy.linalg import eigh
 from scipy.sparse import csgraph
+from tqdm import tqdm
 
 def compute_similarity(matrix, beta=5):
     '''
@@ -46,41 +49,12 @@ def spectral_decomposition(matrix):
         Sorted from largest to smallest.
     '''
 
-    affinity = compute_similarity(matrix)
-    laplacian = csgraph.laplacian(affinity, normed=True)
+    #affinity = compute_similarity(matrix)
+    affinity = matrix
+    laplacian = csgraph.laplacian(affinity, normed=True)    
     eigen_vals, eigen_vecs = eigh(laplacian)
-    eigen_vals, eigen_vecs = np.flip(eigen_vals), np.flip(eigen_vecs)
+    eigen_vals, eigen_vecs = np.flip(eigen_vals), np.flip(eigen_vecs, axis=1)
     return eigen_vals, eigen_vecs
-
-def sort_eigens(eigen_vals, eigen_vecs):
-    '''
-    Sorts the eigenvalues vector and rearranges the columns
-    of the eigeavalue matrix to correspond with the sorted
-    eigenvalues. Sorted in descending order.
-
-    Parameters
-    ----------
-    eigen_vals: vector
-        Eigenvalues vector to be sorted.
-    eigen_vecs: matrix 
-        Eigenvectors to be rearranged.
-
-    Returns
-    ---------
-    sorted_eigen_vals: vector
-        Sorted eigen_vals.
-    sorted_eigen_vecs: matrix
-        Sorted eigen_vecs.
-    sorted_indices: list
-        The sorted order of indices of the original
-        eigen_vals vector.
-    '''
-    ascending_sorted_indices = np.argsort(eigen_vals)
-    descending_sorted_indices = np.flip(ascending_sorted_indices)
-    eigen_vals = eigen_vals[descending_sorted_indices]
-    eigen_vecs = eigen_vecs[:, descending_sorted_indices]
-
-    return eigen_vals, eigen_vecs, descending_sorted_indices
 
 def generate_eigens(input_dir, output_dir):
     '''
@@ -99,16 +73,52 @@ def generate_eigens(input_dir, output_dir):
     NoneType object
     '''
 
-    for filename in os.listdir(input_dir):
-        print(filename)
-        vid_title = filename.split('.')[0]
+    for filename in tqdm(os.listdir(input_dir)):
+        vid_title = filename.split('.')[0] + '_eigendata'
         vid = np.load(os.path.join(input_dir, filename))
         eigen_vals = []
         eigen_vecs = []
-        for frame in tqdm(vid):
+        for frame in vid:
             eigen_val, eigen_vec = spectral_decomposition(frame)
             eigen_vals.append(eigen_val)
             eigen_vecs.append(eigen_vec)
 
-        np.savez(os.path.join(output_dir, vid_title + '.npz'),
+        np.savez_compressed(os.path.join(output_dir, vid_title + '.npz'),
                  eigen_vals=eigen_vals, eigen_vecs=eigen_vecs)
+
+def parse_cli(args):
+    '''
+    Parses command line arguments.
+
+    Parameters
+    ----------
+    args: list
+        Unparsed keys and values.
+
+    Returns
+    -------
+    parsed_args: dict
+        Parsed key-value pairs.
+    '''
+
+    parser = argparse.ArgumentParser(
+        description='Reads in distance/affinity matrices to perform spectral'
+                    + ' decomposition.'
+    )
+    parser.add_argument('-i', '--input', required=True,
+                        help='Path to the distance matrices. (.npy)')
+    parser.add_argument('-o', '--output', required=True,
+                        help='Path to save the resulting eigen information.')
+
+    return vars(parser.parse_args(args))
+
+def main():
+    args = parse_cli(sys.argv[1:])
+    input_dir_path = args['input']
+    output_dir_path = args['output']
+
+    generate_eigens(input_dir_path, output_dir_path)
+
+
+if __name__ == '__main__':
+    main()
