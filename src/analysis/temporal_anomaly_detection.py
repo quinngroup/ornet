@@ -7,7 +7,6 @@ import sys
 import argparse
 
 import numpy as np
-import seaborn as sns
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
@@ -39,7 +38,7 @@ def plot(eigen_vals, z_scores, title, save_fig, outdir_path=None):
     corresponding z-score curve.
     '''
 
-    sns.set()
+    plt.style.use('seaborn')
     fig = plt.figure()
     fig.suptitle(title)
 
@@ -60,7 +59,7 @@ def plot(eigen_vals, z_scores, title, save_fig, outdir_path=None):
     plt.close()
 
 def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10, 
-                   window=20, threshold=2): #10, 2
+                   window=20, threshold=2, save_plot=False): #10, 2
     '''
     Generates a figure comprised of a time-series plot
     of the eigenvalue vectors, and an outlier detection 
@@ -92,10 +91,10 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
     NoneType object
     '''
     eigen_vals_avgs = [np.mean(x) for x in eigen_vals]
-    moving_avgs = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
-    moving_stds = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
-    z_scores = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
-    signals = np.empty(shape=(eigen_vals.shape[0],), dtype=np.float)
+    moving_avgs = np.empty(shape=(eigen_vals.shape[0],), dtype=float)
+    moving_stds = np.empty(shape=(eigen_vals.shape[0],), dtype=float)
+    z_scores = np.empty(shape=(eigen_vals.shape[0],), dtype=float)
+    signals = np.empty(shape=(eigen_vals.shape[0],), dtype=float)
 
     moving_avgs[:window] = 0
     moving_stds[:window] = 0
@@ -106,7 +105,6 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
         z_scores[i] = (eigen_vals_avgs[i] - moving_avgs[i]) / moving_stds[i]
 
     plot_title = vid_name + ' Signals Plot'
-    #plot_title = ''
     timepoint_title = vid_name + '.txt'
     with open(os.path.join(outdir_path, timepoint_title), 'w+') as writer:
         for i, score in enumerate(z_scores):
@@ -119,7 +117,7 @@ def temporal_anomaly_detection(vid_name, eigen_vals, outdir_path, k=10,
             else:
                 signals[i] = 0
 
-    plot(eigen_vals[:,:k], signals, plot_title, False, outdir_path) #True to save
+    plot(eigen_vals[:,:k], signals, plot_title, save_plot, outdir_path) #True to save
 
 
 def parse_cli(input_args):
@@ -144,16 +142,31 @@ def parse_cli(input_args):
                         help='Input directory of eigendata file (.npz).')
     parser.add_argument('-o', '--outdir', default=os.getcwd(),
                         help='Output directory for plots.')
+    parser.add_argument('-w', '--window_size', default=20, type=int,
+                        help='Window size for the sliding window.')
+    parser.add_argument('-t', '--threshold', default=2, type=float,
+                        help='Threshold value for declaring z-scores anomalous.')
+    parser.add_argument('--save', default=False, action='store_true',
+                        help='To save plots.')
 
     return vars(parser.parse_args(input_args))
 
 def main():
     args =  parse_cli(sys.argv[1:])
-    for vid_path in tqdm(os.listdir(args['input'])):
-        vid_name = os.path.split(vid_path)[1].split('.')[0]
-        eigen_data_path = os.path.join(args['input'], vid_path)
+    input_dir_path = args['input']
+    output_dir_path = args['outdir']
+    window_size = args['window_size']
+    threshold = args['threshold']
+    save_plot = args['save']
+
+    for vid_path in tqdm(os.listdir(input_dir_path)):
+        vid_name = os.path.split(vid_path)[1].split('.')[0].replace('_eigendata', '')
+        eigen_data_path = os.path.join(input_dir_path, vid_path)
         eigen_vals, eigen_vecs = data_loader(eigen_data_path)   
-        temporal_anomaly_detection(vid_name, eigen_vals, args['outdir'])
+        temporal_anomaly_detection(vid_name, eigen_vals, output_dir_path, 
+                                   window=window_size, 
+                                   threshold=threshold,
+                                   save_plot=save_plot)
 
 if __name__ == '__main__':
     main()
