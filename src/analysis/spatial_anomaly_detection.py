@@ -13,6 +13,7 @@ import imageio
 import numpy as np
 from sklearn.cluster import KMeans
 from scipy.spatial.distance import euclidean
+from tqdm import tqdm
 
 def absolute_distance_traveled(eigen_vecs):
     '''
@@ -33,7 +34,7 @@ def absolute_distance_traveled(eigen_vecs):
         the number of mixture components.
     '''
 
-    distances = np.zeros(eigen_vecs.shape[1], dtype=np.float)
+    distances = np.zeros(eigen_vecs.shape[1], dtype=float)
     for i in range(eigen_vecs.shape[0] - 1):
         for j in range(eigen_vecs.shape[1]):
             distances[j] += euclidean(eigen_vecs[i,j], eigen_vecs[i + 1,j])
@@ -269,7 +270,7 @@ def spatial_anomaly_detection(vid_path, means, covars, eigen_vecs,
         num_of_boxes = len(region_indices)
         box_colors = np.random.randint(256, size=(num_of_boxes, 3))
 
-        for i, frame in enumerate(reader):
+        for i, frame in enumerate(tqdm(reader)):
             current_frame = frame
             avg_box_area = 0
             if display_areas:
@@ -332,7 +333,7 @@ def main():
     eigen_data = np.load(args['eigendata'])
     eigen_vals, eigen_vecs = eigen_data['eigen_vals'], eigen_data['eigen_vecs']
     inter = np.load(args['intermediates'])
-    means, covars = inter['means'], inter['covars']
+    means, covars = inter['means'], inter['covars'][0] #Investigate cause of the 0
     spatial_anomaly_detection(args['video'], means, covars, eigen_vecs, 
                         args['box_number'], args['outdir'])
 
