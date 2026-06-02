@@ -1,3 +1,5 @@
+# :warning: ARCHIVED June 2, 2026. Next-gen ornet package available here: https://codeberg.org/magsol/ornet :warning:
+
 # OrNet [![Build Status](https://travis-ci.org/quinngroup/ornet.svg?branch=master)](https://travis-ci.org/quinngroup/ornet) ![Python status](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue) [![status](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef/status.svg)](https://joss.theoj.org/papers/6fbce182256576a0dd3d35c26f83a9ef)
 **OrNet** is a python pipeline for analyzing 
 microscopy imagery of organelles. 
